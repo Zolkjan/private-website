@@ -4,9 +4,16 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Spline from "@splinetool/react-spline";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
+
+const Spline = dynamic(() => import("@splinetool/react-spline"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-[#0a0a0a]" aria-hidden="true" />
+  ),
+});
 
 gsap.registerPlugin(ScrollTrigger);
 

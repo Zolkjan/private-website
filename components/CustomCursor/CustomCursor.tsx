@@ -12,62 +12,54 @@ const CustomCursor = () => {
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
-    let mouseX = 0;
-    let mouseY = 0;
+    const HOVER_SELECTOR = "a, button, [data-cursor-hover]";
 
     const onMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      gsap.to(dot, { x: mouseX, y: mouseY, duration: 0.05, ease: "none" });
+      gsap.to(dot, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.05,
+        ease: "none",
+      });
       gsap.to(ring, {
-        x: mouseX,
-        y: mouseY,
+        x: e.clientX,
+        y: e.clientY,
         duration: 0.18,
         ease: "power2.out",
       });
     };
 
-    const onEnterLink = () => {
-      gsap.to(dot, { scale: 0, duration: 0.2 });
-      ring.classList.add("is-hovering");
+    // Event delegation — single listener on document instead of one per element
+    const onOver = (e: MouseEvent) => {
+      if ((e.target as Element).closest(HOVER_SELECTOR)) {
+        gsap.to(dot, { scale: 0, duration: 0.2 });
+        ring.classList.add("is-hovering");
+      }
     };
 
-    const onLeaveLink = () => {
-      gsap.to(dot, { scale: 1, duration: 0.2 });
-      ring.classList.remove("is-hovering");
+    const onOut = (e: MouseEvent) => {
+      if ((e.target as Element).closest(HOVER_SELECTOR)) {
+        gsap.to(dot, { scale: 1, duration: 0.2 });
+        ring.classList.remove("is-hovering");
+      }
     };
 
-    const onMouseDown = () => {
+    const onMouseDown = () =>
       gsap.to([dot, ring], { scale: 0.7, duration: 0.1 });
-    };
+    const onMouseUp = () => gsap.to([dot, ring], { scale: 1, duration: 0.15 });
 
-    const onMouseUp = () => {
-      gsap.to([dot, ring], { scale: 1, duration: 0.15 });
-    };
-
-    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mouseup", onMouseUp);
-
-    const addHoverListeners = () => {
-      const links = document.querySelectorAll("a, button, [data-cursor-hover]");
-      links.forEach((el) => {
-        el.addEventListener("mouseenter", onEnterLink);
-        el.addEventListener("mouseleave", onLeaveLink);
-      });
-    };
-
-    addHoverListeners();
-
-    // Re-attach on DOM mutations
-    const observer = new MutationObserver(addHoverListeners);
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("mouseover", onOver, { passive: true });
+    document.addEventListener("mouseout", onOut, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mouseup", onMouseUp);
-      observer.disconnect();
+      document.removeEventListener("mouseover", onOver);
+      document.removeEventListener("mouseout", onOut);
     };
   }, []);
 

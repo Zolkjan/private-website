@@ -7,7 +7,8 @@ import CustomCursor from "@/components/CustomCursor";
 const montserratAlternates = Montserrat_Alternates({
   subsets: ["latin"],
   variable: "--font-montserrat-alternates",
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "600", "700", "800"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
