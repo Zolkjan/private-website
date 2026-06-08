@@ -200,10 +200,8 @@ const ProjectCard = ({
       duration: 0.4,
       ease: "power2.out",
     });
-    gsap.to(cardRef.current?.querySelector(".card-glow"), {
-      opacity: 1,
-      duration: 0.4,
-    });
+    const glow = cardRef.current?.querySelector(".card-glow") ?? null;
+    if (glow) gsap.to(glow, { opacity: 1, duration: 0.4 });
   };
 
   const onLeave = () => {
@@ -213,10 +211,8 @@ const ProjectCard = ({
       duration: 0.4,
       ease: "power2.out",
     });
-    gsap.to(cardRef.current?.querySelector(".card-glow"), {
-      opacity: 0,
-      duration: 0.4,
-    });
+    const glow = cardRef.current?.querySelector(".card-glow") ?? null;
+    if (glow) gsap.to(glow, { opacity: 0, duration: 0.4 });
   };
 
   return (
