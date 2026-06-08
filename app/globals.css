@@ -29,8 +29,8 @@
   pointer-events: none;
   z-index: 99999;
   transform: translate(-50%, -50%);
-  will-change: transform, opacity;
-  contain: layout style;
+  will-change: transform;
+  contain: strict;
 }
 
 .cursor-ring {

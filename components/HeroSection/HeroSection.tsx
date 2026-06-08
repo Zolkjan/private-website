@@ -60,17 +60,7 @@ const HeroSection = () => {
           0,
         );
 
-      // Parallax on scroll
-      gsap.to(".spline-container", {
-        y: 120,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
+      // Note: Spline parallax removed — ScrollTrigger scrub + WebGL RAF caused frame drops
     },
     { scope: containerRef },
   );
@@ -82,8 +72,15 @@ const HeroSection = () => {
       ref={containerRef}
       className="grain relative min-h-screen flex items-center overflow-hidden bg-[#0a0a0a]"
     >
-      {/* ── FULL-WIDTH Spline background ── */}
-      <div className="spline-container absolute inset-0 z-0 w-full h-full">
+      {/* ── FULL-WIDTH Spline background — isolated on own GPU compositor layer ── */}
+      <div
+        className="spline-container absolute inset-0 z-0 w-full h-full"
+        style={{
+          willChange: "transform",
+          transform: "translateZ(0)",
+          contain: "strict",
+        }}
+      >
         <Spline
           scene="https://prod.spline.design/jTqzWip9Z57AcMU7/scene.splinecode"
           style={{ width: "100%", height: "100%" }}

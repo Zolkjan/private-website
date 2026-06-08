@@ -14,19 +14,23 @@ const CustomCursor = () => {
 
     const HOVER_SELECTOR = "a, button, [data-cursor-hover]";
 
+    // quickTo pre-compiles the tween once — no new objects on every mousemove
+    const dotX = gsap.quickTo(dot, "x", { duration: 0.05, ease: "none" });
+    const dotY = gsap.quickTo(dot, "y", { duration: 0.05, ease: "none" });
+    const ringX = gsap.quickTo(ring, "x", {
+      duration: 0.18,
+      ease: "power2.out",
+    });
+    const ringY = gsap.quickTo(ring, "y", {
+      duration: 0.18,
+      ease: "power2.out",
+    });
+
     const onMove = (e: MouseEvent) => {
-      gsap.to(dot, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.05,
-        ease: "none",
-      });
-      gsap.to(ring, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.18,
-        ease: "power2.out",
-      });
+      dotX(e.clientX);
+      dotY(e.clientY);
+      ringX(e.clientX);
+      ringY(e.clientY);
     };
 
     // Event delegation — single listener on document instead of one per element
