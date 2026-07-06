@@ -54,7 +54,6 @@ const MainNavigation = () => {
         opacity: 1,
         duration: 0.4,
         ease: "power3.out",
-        pointerEvents: "all",
       });
       gsap.from(menu.querySelectorAll(".mobile-link"), {
         x: 40,
@@ -70,7 +69,6 @@ const MainNavigation = () => {
         opacity: 0,
         duration: 0.35,
         ease: "power3.in",
-        pointerEvents: "none",
       });
     }
   }, [menuOpen]);

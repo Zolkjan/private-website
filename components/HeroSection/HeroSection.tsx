@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { Component, useRef, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,6 +15,74 @@ const Spline = dynamic(() => import("@splinetool/react-spline"), {
     <div className="w-full h-full bg-[#0a0a0a]" aria-hidden="true" />
   ),
 });
+
+const SplineFallback = () => (
+  <div
+    className="w-full h-full"
+    style={{
+      background:
+        "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(4,178,217,0.08) 0%, rgba(10,10,10,0) 70%), #0a0a0a",
+    }}
+    aria-hidden="true"
+  />
+);
+
+// Last-resort boundary for unexpected runtime errors after the pre-check
+class SplineErrorBoundary extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? <SplineFallback /> : this.props.children;
+  }
+}
+
+// Pre-checks WebGL availability before loading Spline so THREE.js never
+// runs (and never logs console errors) when WebGL is unavailable/blocked.
+const SplineScene = () => {
+  const [status, setStatus] = useState<"pending" | "ok" | "unavailable">(
+    "pending",
+  );
+
+  useEffect(() => {
+    let ok = false;
+    try {
+      const canvas = document.createElement("canvas");
+      const gl =
+        canvas.getContext("webgl2") ||
+        canvas.getContext("webgl") ||
+        (canvas.getContext(
+          "experimental-webgl",
+        ) as WebGLRenderingContext | null);
+      if (gl && !gl.isContextLost()) {
+        ok = true;
+        // Release the test context immediately to free the slot for Spline
+        const ext = gl.getExtension("WEBGL_lose_context");
+        if (ext) ext.loseContext();
+      }
+    } catch {
+      // WebGL not supported or blocked
+    }
+    setStatus(ok ? "ok" : "unavailable");
+  }, []);
+
+  if (status === "unavailable") return <SplineFallback />;
+  if (status === "pending")
+    return <div className="w-full h-full bg-[#0a0a0a]" aria-hidden="true" />;
+
+  return (
+    <SplineErrorBoundary>
+      <Spline
+        scene="https://prod.spline.design/jTqzWip9Z57AcMU7/scene.splinecode"
+        style={{ width: "100%", height: "100%" }}
+      />
+    </SplineErrorBoundary>
+  );
+};
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -88,10 +157,7 @@ const HeroSection = () => {
             contain: "strict",
           }}
         >
-          <Spline
-            scene="https://prod.spline.design/jTqzWip9Z57AcMU7/scene.splinecode"
-            style={{ width: "100%", height: "100%" }}
-          />
+          <SplineScene />
         </div>
 
         {/* Bottom gradient — covers legs area */}

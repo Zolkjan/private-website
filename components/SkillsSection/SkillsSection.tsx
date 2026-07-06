@@ -74,6 +74,9 @@ const SkillsSection = () => {
         duration: 0.7,
         stagger: 0.15,
         ease: "power3.out",
+        onComplete() {
+          gsap.set(".skills-category", { clearProps: "y,opacity" });
+        },
         scrollTrigger: {
           trigger: ".skills-grid",
           start: "top 78%",
@@ -88,6 +91,11 @@ const SkillsSection = () => {
         duration: 0.4,
         stagger: 0.04,
         ease: "back.out(1.8)",
+        onComplete() {
+          // Clear inline GSAP transforms so pills don’t create separate GPU layers
+          // inside the will-change:transform marquee container
+          gsap.set(".tech-pill", { clearProps: "scale,opacity,transform" });
+        },
         scrollTrigger: {
           trigger: ".tech-marquee-wrap",
           start: "top 85%",
@@ -102,6 +110,9 @@ const SkillsSection = () => {
         stagger: 0.08,
         ease: "power3.inOut",
         transformOrigin: "left center",
+        onComplete() {
+          gsap.set(".skill-bar-fill", { clearProps: "scaleX,transform" });
+        },
         scrollTrigger: {
           trigger: ".skills-grid",
           start: "top 70%",
@@ -153,7 +164,7 @@ const SkillsSection = () => {
           {categories.map((cat) => (
             <div
               key={cat.title}
-              className="skills-category glass-card rounded-2xl p-8 hover:border-[rgba(5,219,242,0.2)] transition-all duration-400 group"
+              className="skills-category glass-card rounded-2xl p-8 hover:border-[rgba(5,219,242,0.2)] transition-colors duration-300 group"
             >
               <h3 className="text-xs tracking-[0.3em] uppercase text-[#04b2d9] mb-6 group-hover:text-[#05dbf2] transition-colors duration-300">
                 {cat.title}
@@ -196,7 +207,7 @@ const SkillsSection = () => {
             {[...techStack, ...techStack].map((tech, i) => (
               <span
                 key={i}
-                className="tech-pill flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#1a1a1a] bg-[#0d0d0d] text-sm whitespace-nowrap text-[#9bb6c1] hover:border-[rgba(5,219,242,0.3)] hover:text-[#e6f7fb] transition-all duration-300"
+                className="tech-pill flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#1a1a1a] bg-[#0d0d0d] text-sm whitespace-nowrap text-[#9bb6c1] hover:border-[rgba(5,219,242,0.3)] hover:text-[#e6f7fb] transition-colors duration-300"
               >
                 <span
                   className="w-2 h-2 rounded-full"
