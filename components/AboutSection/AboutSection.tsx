@@ -34,6 +34,7 @@ const AboutSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 75%",
+          once: true,
         },
       });
 
@@ -45,6 +46,7 @@ const AboutSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 72%",
+          once: true,
         },
       });
 
@@ -57,6 +59,7 @@ const AboutSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 65%",
+          once: true,
         },
       });
 
@@ -69,6 +72,7 @@ const AboutSection = () => {
         scrollTrigger: {
           trigger: ".about-skills-grid",
           start: "top 80%",
+          once: true,
         },
       });
 
@@ -81,6 +85,7 @@ const AboutSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 68%",
+          once: true,
         },
       });
     },

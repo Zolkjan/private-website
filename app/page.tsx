@@ -1,8 +1,10 @@
 import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import SkillsSection from "@/components/SkillsSection";
-import ProjectsSection from "@/components/ProjectsSection";
-import ContactSection from "@/components/ContactSection";
+import dynamic from "next/dynamic";
+
+const AboutSection = dynamic(() => import("@/components/AboutSection"));
+const SkillsSection = dynamic(() => import("@/components/SkillsSection"));
+const ProjectsSection = dynamic(() => import("@/components/ProjectsSection"));
+const ContactSection = dynamic(() => import("@/components/ContactSection"));
 
 const MainPage = () => {
   return (

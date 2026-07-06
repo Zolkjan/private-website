@@ -36,6 +36,7 @@ const ContactSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 70%",
+          once: true,
         },
       });
 

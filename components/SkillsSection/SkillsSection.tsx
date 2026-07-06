@@ -51,6 +51,7 @@ const SkillsSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 75%",
+          once: true,
         },
       });
 
@@ -62,6 +63,7 @@ const SkillsSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 72%",
+          once: true,
         },
       });
 
@@ -75,6 +77,7 @@ const SkillsSection = () => {
         scrollTrigger: {
           trigger: ".skills-grid",
           start: "top 78%",
+          once: true,
         },
       });
 
@@ -88,6 +91,7 @@ const SkillsSection = () => {
         scrollTrigger: {
           trigger: ".tech-marquee-wrap",
           start: "top 85%",
+          once: true,
         },
       });
 
@@ -101,6 +105,7 @@ const SkillsSection = () => {
         scrollTrigger: {
           trigger: ".skills-grid",
           start: "top 70%",
+          once: true,
         },
       });
     },

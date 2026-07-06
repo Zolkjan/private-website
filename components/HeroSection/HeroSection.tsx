@@ -22,45 +22,53 @@ const HeroSection = () => {
 
   useGSAP(
     () => {
+      // Viewport elements — animate on page load
       const tl = gsap.timeline({ delay: 0.2 });
+      tl.from(".hero-role", {
+        y: 20,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+      }).from(".hero-scroll", { opacity: 0, duration: 0.6 }, "-=0.2");
 
-      // Word-by-word fade-up reveal
-      tl.from(".hero-word", {
+      // Heading — now below the fold, scroll-triggered
+      gsap.from(".hero-word", {
         y: 60,
         opacity: 0,
         duration: 1.0,
         stagger: 0.15,
         ease: "power4.out",
-      })
-        .from(
-          ".hero-role",
-          { y: 20, opacity: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.6",
-        )
-        .from(
-          ".hero-desc",
-          { y: 20, opacity: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.4",
-        )
-        .from(
-          ".hero-cta",
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.6,
-            stagger: 0.12,
-            ease: "power3.out",
-          },
-          "-=0.4",
-        )
-        .from(".hero-scroll", { opacity: 0, duration: 0.6 }, "-=0.2")
-        .from(
-          ".hero-line",
-          { scaleX: 0, duration: 1.4, ease: "power4.inOut" },
-          0,
-        );
+        scrollTrigger: {
+          trigger: ".hero-heading",
+          start: "top 85%",
+          once: true,
+        },
+      });
 
-      // Note: Spline parallax removed — ScrollTrigger scrub + WebGL RAF caused frame drops
+      // Description + CTAs — scroll-triggered
+      gsap.from(".hero-desc", {
+        y: 20,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".hero-desc", start: "top 90%", once: true },
+      });
+
+      gsap.from(".hero-cta", {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.12,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".hero-desc", start: "top 85%", once: true },
+      });
+
+      gsap.from(".hero-line", {
+        scaleX: 0,
+        duration: 1.4,
+        ease: "power4.inOut",
+        scrollTrigger: { trigger: ".hero-line", start: "top 90%", once: true },
+      });
     },
     { scope: containerRef },
   );
@@ -68,12 +76,9 @@ const HeroSection = () => {
   const nameWords = ["JAN", "ŻÓŁKIEWSKI"];
 
   return (
-    <section
-      ref={containerRef}
-      className="grain relative bg-[#0a0a0a]"
-    >
+    <section ref={containerRef} className="grain relative bg-[#0a0a0a]">
       {/* ── SPLINE VIEWPORT ── */}
-      <div className="relative h-screen overflow-hidden flex flex-col justify-between">
+      <div className="relative h-screen overflow-hidden">
         {/* Spline background */}
         <div
           className="spline-container absolute inset-0 z-0 w-full h-full"
@@ -102,7 +107,7 @@ const HeroSection = () => {
         <div className="absolute top-0 left-0 right-0 h-32 z-[1] bg-gradient-to-b from-[#0a0a0a] to-transparent pointer-events-none" />
 
         {/* ── TOP: role badge centered ── */}
-        <div className="relative z-[2] flex justify-center pt-28 sm:pt-32 px-4">
+        <div className="absolute top-0 left-0 right-0 z-[2] flex justify-center pt-28 sm:pt-32 px-4">
           <div className="hero-role flex items-center gap-3">
             <span className="hidden sm:inline-block w-8 h-px bg-[#04b2d9]" />
             <span className="text-[10px] sm:text-xs tracking-[0.35em] text-[#04b2d9] uppercase font-medium text-center">
@@ -112,38 +117,39 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Spacer — pushes heading to bottom */}
-        <div className="flex-1" />
-
-        {/* ── BOTTOM: big centered heading overlaying legs ── */}
-        <div className="relative z-[2] w-full px-4 pb-16 sm:pb-20 text-center">
-          <h1 className="font-bold leading-[0.85] tracking-tight uppercase">
-            {nameWords.map((word) => (
-              <div key={word}>
-                <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)]">
-                  {word}
-                </span>
-              </div>
-            ))}
-            <div>
-              <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)] text-gradient glow-text">
-                PORTFOLIO
-              </span>
-            </div>
-          </h1>
-        </div>
-
         {/* Scroll indicator */}
         <div className="hero-scroll absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-[3]">
           <span className="text-[10px] tracking-[0.4em] text-[#9bb6c1] uppercase">
             Scroll
           </span>
-          <ChevronDown size={16} className="text-[#04b2d9] animate-bounce-slow" />
+          <ChevronDown
+            size={16}
+            className="text-[#04b2d9] animate-bounce-slow"
+          />
         </div>
       </div>
 
-      {/* ── BELOW SPLINE: description, CTAs, stats ── */}
-      <div className="relative z-[2] w-full max-w-7xl mx-auto px-6 lg:px-12 py-16 sm:py-20">
+      {/* ── BELOW SPLINE: heading, description, CTAs, stats ── */}
+
+      {/* Big heading */}
+      <div className="hero-heading relative z-[2] w-full px-4 pt-16 sm:pt-20 pb-4 text-center">
+        <h1 className="font-bold leading-[0.85] tracking-tight uppercase">
+          {nameWords.map((word) => (
+            <div key={word}>
+              <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)]">
+                {word}
+              </span>
+            </div>
+          ))}
+          <div>
+            <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)] text-gradient glow-text">
+              PORTFOLIO
+            </span>
+          </div>
+        </h1>
+      </div>
+
+      <div className="relative z-[2] w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 sm:py-16">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-10 sm:gap-16">
           {/* Description */}
           <p className="hero-desc text-[#9bb6c1] text-base sm:text-lg max-w-md leading-relaxed">
@@ -180,7 +186,9 @@ const HeroSection = () => {
             { num: "100%", label: "Zaangażowania" },
           ].map((stat) => (
             <div key={stat.label}>
-              <p className="text-3xl sm:text-4xl font-bold text-gradient">{stat.num}</p>
+              <p className="text-3xl sm:text-4xl font-bold text-gradient">
+                {stat.num}
+              </p>
               <p className="text-xs tracking-[0.2em] text-[#9bb6c1] uppercase mt-1">
                 {stat.label}
               </p>

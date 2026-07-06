@@ -14,21 +14,19 @@ const CustomCursor = () => {
 
     const HOVER_SELECTOR = "a, button, [data-cursor-hover]";
 
-    // quickTo pre-compiles the tween once — no new objects on every mousemove
-    const dotX = gsap.quickTo(dot, "x", { duration: 0.05, ease: "none" });
-    const dotY = gsap.quickTo(dot, "y", { duration: 0.05, ease: "none" });
+    // Dot: gsap.set applies instantly (no RAF delay, no tween duration)
+    // Ring: quickTo with short duration gives a smooth trailing effect
     const ringX = gsap.quickTo(ring, "x", {
-      duration: 0.18,
+      duration: 0.12,
       ease: "power2.out",
     });
     const ringY = gsap.quickTo(ring, "y", {
-      duration: 0.18,
+      duration: 0.12,
       ease: "power2.out",
     });
 
     const onMove = (e: MouseEvent) => {
-      dotX(e.clientX);
-      dotY(e.clientY);
+      gsap.set(dot, { x: e.clientX, y: e.clientY });
       ringX(e.clientX);
       ringY(e.clientY);
     };
@@ -37,14 +35,24 @@ const CustomCursor = () => {
     const onOver = (e: MouseEvent) => {
       if ((e.target as Element).closest(HOVER_SELECTOR)) {
         gsap.to(dot, { scale: 0, duration: 0.2 });
-        ring.classList.add("is-hovering");
+        gsap.to(ring, {
+          scale: 1.5,
+          borderColor: "rgba(5,219,242,0.8)",
+          duration: 0.2,
+          ease: "power2.out",
+        });
       }
     };
 
     const onOut = (e: MouseEvent) => {
       if ((e.target as Element).closest(HOVER_SELECTOR)) {
         gsap.to(dot, { scale: 1, duration: 0.2 });
-        ring.classList.remove("is-hovering");
+        gsap.to(ring, {
+          scale: 1,
+          borderColor: "rgba(5,219,242,0.5)",
+          duration: 0.2,
+          ease: "power2.out",
+        });
       }
     };
 
@@ -70,10 +78,7 @@ const CustomCursor = () => {
   return (
     <>
       <div ref={dotRef} className="cursor-dot" />
-      <div
-        ref={ringRef}
-        className="cursor-ring transition-[width,height,border-color,background] duration-200"
-      />
+      <div ref={ringRef} className="cursor-ring" />
     </>
   );
 };

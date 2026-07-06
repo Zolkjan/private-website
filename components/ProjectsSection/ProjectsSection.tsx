@@ -106,6 +106,7 @@ const ProjectsSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 75%",
+          once: true,
         },
       });
 
@@ -117,6 +118,7 @@ const ProjectsSection = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 72%",
+          once: true,
         },
       });
 
@@ -129,6 +131,7 @@ const ProjectsSection = () => {
         scrollTrigger: {
           trigger: ".projects-grid",
           start: "top 80%",
+          once: true,
         },
       });
     },
