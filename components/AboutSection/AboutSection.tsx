@@ -136,7 +136,7 @@ const AboutSection = () => {
               {skills.map((s) => (
                 <span
                   key={s}
-                  className="about-skill-tag px-4 py-2 border border-[rgba(5,219,242,0.2)] text-[#9bb6c1] text-xs tracking-[0.15em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-all duration-300"
+                  className="about-skill-tag px-4 py-2 border border-[rgba(5,219,242,0.2)] text-[#9bb6c1] text-xs tracking-[0.15em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-colors duration-300"
                 >
                   {s}
                 </span>

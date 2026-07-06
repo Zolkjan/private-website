@@ -49,24 +49,11 @@ const SplineScene = () => {
   );
 
   useEffect(() => {
-    let ok = false;
-    try {
-      const canvas = document.createElement("canvas");
-      const gl =
-        canvas.getContext("webgl2") ||
-        canvas.getContext("webgl") ||
-        (canvas.getContext(
-          "experimental-webgl",
-        ) as WebGLRenderingContext | null);
-      if (gl && !gl.isContextLost()) {
-        ok = true;
-        // Release the test context immediately to free the slot for Spline
-        const ext = gl.getExtension("WEBGL_lose_context");
-        if (ext) ext.loseContext();
-      }
-    } catch {
-      // WebGL not supported or blocked
-    }
+    // Check API presence only — no context created, no side effects.
+    // SplineErrorBoundary handles runtime failures if a context later fails.
+    const ok =
+      typeof WebGLRenderingContext !== "undefined" ||
+      typeof WebGL2RenderingContext !== "undefined";
     setStatus(ok ? "ok" : "unavailable");
   }, []);
 
@@ -174,7 +161,7 @@ const HeroSection = () => {
 
         {/* ── TOP: role badge centered ── */}
         <div className="absolute top-0 left-0 right-0 z-[2] flex justify-center pt-28 sm:pt-32 px-4">
-          <div className="hero-role flex items-center gap-3">
+          <div className="hero-role animate-float flex items-center gap-3">
             <span className="hidden sm:inline-block w-8 h-px bg-[#04b2d9]" />
             <span className="text-[10px] sm:text-xs tracking-[0.35em] text-[#04b2d9] uppercase font-medium text-center">
               Frontend Developer &amp; Creative Coder
@@ -208,7 +195,7 @@ const HeroSection = () => {
             </div>
           ))}
           <div>
-            <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)] text-gradient glow-text">
+            <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)] text-shimmer glow-text">
               PORTFOLIO
             </span>
           </div>
@@ -227,7 +214,7 @@ const HeroSection = () => {
           <div className="flex flex-wrap gap-4 sm:flex-shrink-0">
             <Link
               href="/projects"
-              className="hero-cta group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-sm"
+              className="hero-cta group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-pulse"
             >
               MOJE PROJEKTY
               <ArrowRight
@@ -237,7 +224,7 @@ const HeroSection = () => {
             </Link>
             <Link
               href="/contact"
-              className="hero-cta group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-all duration-300"
+              className="hero-cta group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-[border-color,color] duration-300"
             >
               KONTAKT
             </Link>

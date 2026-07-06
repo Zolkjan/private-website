@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat_Alternates } from "next/font/google";
 import "./globals.css";
 import MainNavigation from "@/components/MainNavigation";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const montserratAlternates = Montserrat_Alternates({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body
         className={`${montserratAlternates.variable} font-[family-name:var(--font-montserrat-alternates)] antialiased bg-[#0a0a0a] text-[#e6f7fb] overflow-x-hidden`}
       >
+        <ScrollProgress />
         <MainNavigation />
         {children}
       </body>

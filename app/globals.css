@@ -15,7 +15,10 @@
 
 /* ─── Colored cursor ───────────────────────────────────────── */
 * {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='20'%3E%3Cpath d='M1 1 L1 15 L5 11 L8 17 L10 16 L7 10 L12 10 Z' fill='%2304b2d9' stroke='%230a0a0a' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 1 1, default !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='20'%3E%3Cpath d='M1 1 L1 15 L5 11 L8 17 L10 16 L7 10 L12 10 Z' fill='%2304b2d9' stroke='%230a0a0a' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E")
+      1 1,
+    default !important;
 }
 
 /* ─── Typography Utilities ──────────────────────────────────── */
@@ -51,6 +54,61 @@
 
 .glow-text {
   text-shadow: 0 0 30px rgba(5, 219, 242, 0.5);
+}
+
+/* ─── Shimmer sweep on gradient text ────────────────────────── */
+@keyframes text-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #04b2d9 0%,
+    #05dbf2 30%,
+    #e6f7fb 50%,
+    #05dbf2 70%,
+    #04b2d9 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shimmer 4s linear infinite;
+}
+
+/* ─── Gentle float ───────────────────────────────────────── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ─── Pulsing glow on primary CTA ─────────────────────────── */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(5, 219, 242, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 28px rgba(5, 219, 242, 0.65),
+      0 0 50px rgba(4, 178, 217, 0.2);
+  }
+}
+.glow-pulse {
+  animation: pulse-glow 2.5s ease-in-out infinite;
 }
 
 /* ─── Noise overlay ─────────────────────────────────────────── */
@@ -134,7 +192,19 @@
 .gsap-hidden {
   opacity: 0;
 }
-
+/* ─── Respect prefers-reduced-motion ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .text-shimmer {
+    animation: none;
+    background-position: 0% center;
+  }
+  .animate-float,
+  .glow-pulse,
+  .animate-bounce-slow,
+  .animate-marquee {
+    animation: none;
+  }
+}
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

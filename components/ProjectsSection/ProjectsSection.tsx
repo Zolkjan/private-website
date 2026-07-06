@@ -198,7 +198,7 @@ const ProjectCard = ({
 
   const onEnter = () => {
     gsap.to(cardRef.current, {
-      y: -8,
+      y: -10,
       borderColor: `${project.accent}40`,
       duration: 0.4,
       ease: "power2.out",
@@ -207,12 +207,29 @@ const ProjectCard = ({
     if (glow) gsap.to(glow, { opacity: 1, duration: 0.4 });
   };
 
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    gsap.to(cardRef.current, {
+      rotateX: -y * 10,
+      rotateY: x * 10,
+      transformPerspective: 900,
+      duration: 0.25,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
+  };
+
   const onLeave = () => {
     gsap.to(cardRef.current, {
       y: 0,
+      rotateX: 0,
+      rotateY: 0,
       borderColor: "rgba(26,26,26,1)",
-      duration: 0.4,
-      ease: "power2.out",
+      duration: 0.5,
+      ease: "power3.out",
     });
     const glow = cardRef.current?.querySelector(".card-glow") ?? null;
     if (glow) gsap.to(glow, { opacity: 0, duration: 0.4 });
@@ -221,8 +238,10 @@ const ProjectCard = ({
   return (
     <div
       ref={cardRef}
-      className="project-card relative rounded-2xl bg-[#0d0d0d] border border-[#1a1a1a] overflow-hidden transition-colors duration-400 flex flex-col"
+      className="project-card relative rounded-2xl bg-[#0d0d0d] border border-[#1a1a1a] overflow-hidden flex flex-col"
+      style={{ transformStyle: "preserve-3d" }}
       onMouseEnter={onEnter}
+      onMouseMove={onMouseMove}
       onMouseLeave={onLeave}
     >
       {/* Glow blob */}
