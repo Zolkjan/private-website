@@ -239,7 +239,6 @@ const ProjectCard = ({
     <div
       ref={cardRef}
       className="project-card relative rounded-2xl bg-[#0d0d0d] border border-[#1a1a1a] overflow-hidden flex flex-col"
-      style={{ transformStyle: "preserve-3d" }}
       onMouseEnter={onEnter}
       onMouseMove={onMouseMove}
       onMouseLeave={onLeave}

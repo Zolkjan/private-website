@@ -2,6 +2,7 @@
 
 import { Component, useRef, useState, useEffect } from "react";
 import type { ReactNode } from "react";
+import type { Application } from "@splinetool/runtime";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -43,10 +44,15 @@ class SplineErrorBoundary extends Component<
 
 // Pre-checks WebGL availability before loading Spline so THREE.js never
 // runs (and never logs console errors) when WebGL is unavailable/blocked.
+// Also pauses the Spline render loop when the section is off-screen to
+// free up GPU resources during page scroll.
 const SplineScene = () => {
   const [status, setStatus] = useState<"pending" | "ok" | "unavailable">(
     "pending",
   );
+  const appRef = useRef<Application | null>(null);
+  const isVisibleRef = useRef(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Check API presence only — no context created, no side effects.
@@ -57,17 +63,45 @@ const SplineScene = () => {
     setStatus(ok ? "ok" : "unavailable");
   }, []);
 
+  // Pause Spline render loop when scrolled out of view → frees GPU for scroll
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+        const app = appRef.current;
+        if (!app) return;
+        if (entry.isIntersecting) {
+          if (app.isStopped) app.play();
+        } else {
+          if (!app.isStopped) app.stop();
+        }
+      },
+      { threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [status]);
+
   if (status === "unavailable") return <SplineFallback />;
   if (status === "pending")
     return <div className="w-full h-full bg-[#0a0a0a]" aria-hidden="true" />;
 
   return (
-    <SplineErrorBoundary>
-      <Spline
-        scene="https://prod.spline.design/jTqzWip9Z57AcMU7/scene.splinecode"
-        style={{ width: "100%", height: "100%" }}
-      />
-    </SplineErrorBoundary>
+    <div ref={containerRef} className="w-full h-full">
+      <SplineErrorBoundary>
+        <Spline
+          scene="https://prod.spline.design/jTqzWip9Z57AcMU7/scene.splinecode"
+          style={{ width: "100%", height: "100%" }}
+          onLoad={(app) => {
+            appRef.current = app;
+            // If already off-screen when load completes, stop immediately
+            if (!isVisibleRef.current) app.stop();
+          }}
+        />
+      </SplineErrorBoundary>
+    </div>
   );
 };
 
