@@ -8,7 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const Spline = dynamic(() => import("@splinetool/react-spline"), {
   ssr: false,
@@ -112,53 +112,80 @@ const HeroSection = () => {
 
   useGSAP(
     () => {
-      // Viewport elements — animate on page load
-      const tl = gsap.timeline({ delay: 0.2 });
-      tl.from(".hero-role", {
-        y: 20,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-      }).from(".hero-scroll", { opacity: 0, duration: 0.6 }, "-=0.2");
+      // On-load: above-fold elements only
+      gsap
+        .timeline({ delay: 0.2 })
+        .from(".hero-role", {
+          y: 20,
+          opacity: 0,
+          duration: 0.7,
+          ease: "power3.out",
+        })
+        .from(".hero-scroll", { opacity: 0, duration: 0.6 }, "-=0.2");
 
-      // Heading — now below the fold, scroll-triggered
-      gsap.from(".hero-word", {
-        y: 60,
-        opacity: 0,
-        duration: 1.0,
-        stagger: 0.15,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: ".hero-heading",
-          start: "top 85%",
-          once: true,
-        },
-      });
-
-      // Description + CTAs — scroll-triggered
-      gsap.from(".hero-desc", {
-        y: 20,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".hero-desc", start: "top 90%", once: true },
-      });
-
-      gsap.from(".hero-cta", {
-        y: 20,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.12,
-        ease: "power3.out",
-        scrollTrigger: { trigger: ".hero-desc", start: "top 85%", once: true },
-      });
-
-      gsap.from(".hero-line", {
-        scaleX: 0,
-        duration: 1.4,
-        ease: "power4.inOut",
-        scrollTrigger: { trigger: ".hero-line", start: "top 90%", once: true },
-      });
+      // Single ScrollTrigger timeline — replaces 4 separate triggers
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: ".hero-heading",
+            start: "top 85%",
+            once: true,
+          },
+          onComplete() {
+            gsap.set(".hero-word,.hero-desc,.hero-cta,.hero-line,.hero-stat", {
+              clearProps: "all",
+            });
+          },
+        })
+        .from(".hero-word", {
+          y: 60,
+          opacity: 0,
+          stagger: 0.15,
+          duration: 1.0,
+          ease: "power4.out",
+        })
+        .from(
+          ".hero-desc",
+          {
+            y: 20,
+            opacity: 0,
+            duration: 0.7,
+            ease: "power3.out",
+          },
+          "-=0.4",
+        )
+        .from(
+          ".hero-cta",
+          {
+            y: 20,
+            opacity: 0,
+            stagger: 0.08,
+            duration: 0.6,
+            ease: "power3.out",
+          },
+          "-=0.4",
+        )
+        .from(
+          ".hero-line",
+          {
+            scaleX: 0,
+            transformOrigin: "left center",
+            duration: 0.9,
+            ease: "power4.inOut",
+          },
+          "<",
+        )
+        .from(
+          ".hero-stat",
+          {
+            y: 20,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.5,
+            ease: "power3.out",
+          },
+          "-=0.3",
+        );
     },
     { scope: containerRef },
   );
@@ -204,19 +231,19 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="hero-scroll absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-[3]">
-          <span className="text-[10px] tracking-[0.4em] text-[#9bb6c1] uppercase">
+        {/* Scroll indicator — mouse icon */}
+        <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-[3]">
+          <span className="text-[9px] tracking-[0.5em] text-[#9bb6c1] uppercase">
             Scroll
           </span>
-          <ChevronDown
-            size={16}
-            className="text-[#04b2d9] animate-bounce-slow"
-          />
+          <div className="w-5 h-8 rounded-full border border-[rgba(5,219,242,0.45)] flex justify-center pt-1.5">
+            <span className="w-0.5 h-2 rounded-full bg-[#04b2d9] animate-bounce-slow block" />
+          </div>
         </div>
       </div>
 
-      {/* ── BELOW SPLINE: heading, description, CTAs, stats ── */}
+      {/* ── BELOW SPLINE ── */}
+      <div className="glow-line" />
 
       {/* Big heading */}
       <div className="hero-heading relative z-[2] w-full px-4 pt-16 sm:pt-20 pb-4 text-center">
@@ -237,18 +264,31 @@ const HeroSection = () => {
       </div>
 
       <div className="relative z-[2] w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 sm:py-16">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-10 sm:gap-16">
-          {/* Description */}
-          <p className="hero-desc text-[#9bb6c1] text-base sm:text-lg max-w-md leading-relaxed">
-            Tworzę cyfrowe doświadczenia, które łączą nowoczesny design
-            z&nbsp;zaawansowanymi animacjami i&nbsp;perfekcyjnym kodem.
-          </p>
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-20">
+          {/* Description + tech badges */}
+          <div className="max-w-lg">
+            <p className="hero-desc text-[#9bb6c1] text-base sm:text-lg leading-relaxed mb-6">
+              Specjalizuję się w&nbsp;nowoczesnych interfejsach, płynnych
+              animacjach GSAP i&nbsp;immersyjnych scenach 3D — projektuję
+              z&nbsp;pasją i&nbsp;buduję z&nbsp;precyzją.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {["Next.js 15", "GSAP", "Three.js", "TypeScript"].map((tech) => (
+                <span
+                  key={tech}
+                  className="hero-cta text-[10px] tracking-[0.2em] uppercase px-3 py-1.5 rounded-full border border-[rgba(5,219,242,0.15)] text-[#9bb6c1] hover:border-[rgba(5,219,242,0.4)] hover:text-[#e6f7fb] transition-colors duration-300"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
 
           {/* CTAs */}
-          <div className="flex flex-wrap gap-4 sm:flex-shrink-0">
+          <div className="flex flex-wrap gap-4 lg:flex-col lg:items-start flex-shrink-0">
             <Link
               href="/projects"
-              className="hero-cta group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-pulse"
+              className="hero-cta group flex items-center gap-3 px-8 py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-pulse"
             >
               MOJE PROJEKTY
               <ArrowRight
@@ -258,21 +298,30 @@ const HeroSection = () => {
             </Link>
             <Link
               href="/contact"
-              className="hero-cta group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-[border-color,color] duration-300"
+              className="hero-cta group flex items-center gap-3 px-8 py-4 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-[border-color,color] duration-300"
             >
               KONTAKT
             </Link>
           </div>
         </div>
 
-        {/* Stats row */}
-        <div className="hero-role flex flex-wrap gap-8 sm:gap-12 pt-10 mt-10 border-t border-[rgba(255,255,255,0.08)]">
+        {/* Animated separator */}
+        <div
+          className="hero-line mt-12 h-px"
+          style={{
+            background:
+              "linear-gradient(to right, transparent, rgba(255,255,255,0.08) 50%, transparent)",
+          }}
+        />
+
+        {/* Stats */}
+        <div className="flex flex-wrap gap-8 sm:gap-16 pt-10">
           {[
             { num: "3+", label: "Lata doświadczenia" },
             { num: "20+", label: "Projektów" },
             { num: "100%", label: "Zaangażowania" },
           ].map((stat) => (
-            <div key={stat.label}>
+            <div key={stat.label} className="hero-stat">
               <p className="text-3xl sm:text-4xl font-bold text-gradient">
                 {stat.num}
               </p>

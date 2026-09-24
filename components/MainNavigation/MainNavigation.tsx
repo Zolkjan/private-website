@@ -18,19 +18,49 @@ const navLinks = [
 
 const MainNavigation = () => {
   const headerRef = useRef<HTMLElement>(null);
+  const navBarRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Scroll detection
+  // Direct DOM style mutation — no React re-renders on every scroll event
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
+    const bar = navBarRef.current;
+    if (!bar) return;
+
+    let scrolled = false;
+
+    const applyStyle = (isScrolled: boolean) => {
+      if (isScrolled) {
+        bar.style.borderColor = "rgba(5,219,242,0.15)";
+        bar.style.background = "rgba(10,10,10,0.85)";
+        bar.style.backdropFilter = "blur(24px)";
+        (
+          bar.style as CSSStyleDeclaration & { webkitBackdropFilter: string }
+        ).webkitBackdropFilter = "blur(24px)";
+        bar.style.boxShadow = "0 0 40px rgba(5,219,242,0.05)";
+      } else {
+        bar.style.borderColor = "rgba(255,255,255,0.1)";
+        bar.style.background = "rgba(255,255,255,0.04)";
+        bar.style.backdropFilter = "blur(12px)";
+        (
+          bar.style as CSSStyleDeclaration & { webkitBackdropFilter: string }
+        ).webkitBackdropFilter = "blur(12px)";
+        bar.style.boxShadow = "none";
+      }
+    };
+
+    const onScroll = () => {
+      const shouldScroll = window.scrollY > 30;
+      if (shouldScroll === scrolled) return; // skip if threshold not crossed
+      scrolled = shouldScroll;
+      applyStyle(shouldScroll);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Entrance animation
   useGSAP(
     () => {
       gsap.from(headerRef.current, {
@@ -44,7 +74,6 @@ const MainNavigation = () => {
     { scope: headerRef },
   );
 
-  // Mobile menu toggle animation
   useEffect(() => {
     const menu = mobileMenuRef.current;
     if (!menu) return;
@@ -81,29 +110,31 @@ const MainNavigation = () => {
       >
         <div className="mx-auto max-w-7xl px-4 w-full pointer-events-auto">
           <div
-            className={`flex items-center justify-between rounded-2xl px-6 py-3 transition-all duration-500 ${
-              scrolled
-                ? "border border-[rgba(5,219,242,0.15)] bg-[rgba(10,10,10,0.85)] backdrop-blur-xl shadow-[0_0_40px_rgba(5,219,242,0.05)]"
-                : "border border-white/10 bg-[rgba(255,255,255,0.04)] backdrop-blur-md"
-            }`}
+            ref={navBarRef}
+            className="flex items-center justify-between rounded-2xl px-8 py-4 border transition-all duration-500"
+            style={{
+              borderColor: "rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.04)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+            }}
           >
-            {/* Logo */}
             <Link href="/" className="flex-shrink-0">
               <Image
                 src={FullCreativePathLogo}
                 alt="Creative Path Logo"
-                height={44}
+                height={58}
                 priority
+                className="invert transition-opacity duration-300"
               />
             </Link>
 
-            {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-[11px] tracking-[0.25em] font-medium transition-colors duration-300 relative group ${
+                  className={`text-sm tracking-[0.25em] font-medium transition-colors duration-300 relative group ${
                     pathname === link.href
                       ? "text-[#05dbf2]"
                       : "text-[#9bb6c1] hover:text-[#e6f7fb]"
@@ -121,36 +152,33 @@ const MainNavigation = () => {
               ))}
             </nav>
 
-            {/* Socials + mobile toggle */}
             <div className="flex items-center gap-3">
               <div className="hidden md:flex items-center gap-3">
-                <a
+                <Link
                   href="https://github.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
                 >
-                  <Github size={16} />
-                </a>
-                <a
+                  <Github size={20} />
+                </Link>
+                <Link
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
                 >
-                  <Linkedin size={16} />
-                </a>
-                <a
+                  <Linkedin size={20} />
+                </Link>
+                <Link
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
                 >
-                  <Instagram size={16} />
-                </a>
+                  <Instagram size={20} />
+                </Link>
               </div>
-
-              {/* Mobile hamburger */}
               <button
                 className="md:hidden text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300 p-1"
                 onClick={() => setMenuOpen((v) => !v)}
@@ -162,8 +190,6 @@ const MainNavigation = () => {
           </div>
         </div>
       </header>
-
-      {/* Mobile overlay menu */}
       <div
         ref={mobileMenuRef}
         className="fixed inset-0 z-40 bg-[#0a0a0a] flex flex-col justify-center px-8"
