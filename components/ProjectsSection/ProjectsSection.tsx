@@ -195,8 +195,21 @@ const ProjectCard = ({
   index: number;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const rotateXRef = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+  const rotateYRef = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
 
   const onEnter = () => {
+    if (cardRef.current && !rotateXRef.current) {
+      gsap.set(cardRef.current, { transformPerspective: 900 });
+      rotateXRef.current = gsap.quickTo(cardRef.current, "rotateX", {
+        duration: 0.25,
+        ease: "power2.out",
+      });
+      rotateYRef.current = gsap.quickTo(cardRef.current, "rotateY", {
+        duration: 0.25,
+        ease: "power2.out",
+      });
+    }
     gsap.to(cardRef.current, {
       y: -10,
       borderColor: `${project.accent}40`,
@@ -212,14 +225,8 @@ const ProjectCard = ({
     const rect = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    gsap.to(cardRef.current, {
-      rotateX: -y * 10,
-      rotateY: x * 10,
-      transformPerspective: 900,
-      duration: 0.25,
-      ease: "power2.out",
-      overwrite: "auto",
-    });
+    rotateXRef.current?.(-y * 10);
+    rotateYRef.current?.(x * 10);
   };
 
   const onLeave = () => {

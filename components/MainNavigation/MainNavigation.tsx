@@ -34,18 +34,10 @@ const MainNavigation = () => {
       if (isScrolled) {
         bar.style.borderColor = "rgba(5,219,242,0.15)";
         bar.style.background = "rgba(10,10,10,0.85)";
-        bar.style.backdropFilter = "blur(24px)";
-        (
-          bar.style as CSSStyleDeclaration & { webkitBackdropFilter: string }
-        ).webkitBackdropFilter = "blur(24px)";
         bar.style.boxShadow = "0 0 40px rgba(5,219,242,0.05)";
       } else {
         bar.style.borderColor = "rgba(255,255,255,0.1)";
         bar.style.background = "rgba(255,255,255,0.04)";
-        bar.style.backdropFilter = "blur(12px)";
-        (
-          bar.style as CSSStyleDeclaration & { webkitBackdropFilter: string }
-        ).webkitBackdropFilter = "blur(12px)";
         bar.style.boxShadow = "none";
       }
     };
@@ -111,7 +103,7 @@ const MainNavigation = () => {
         <div className="mx-auto max-w-7xl px-4 w-full pointer-events-auto">
           <div
             ref={navBarRef}
-            className="flex items-center justify-between rounded-2xl px-8 py-4 border transition-all duration-500"
+            className="flex items-center justify-between rounded-2xl px-8 py-4 border transition-[background-color,border-color,box-shadow] duration-200"
             style={{
               borderColor: "rgba(255,255,255,0.1)",
               background: "rgba(255,255,255,0.04)",
@@ -134,7 +126,7 @@ const MainNavigation = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm tracking-[0.25em] font-medium transition-colors duration-300 relative group ${
+                  className={`text-sm tracking-[0.25em] font-medium transition-colors duration-150 relative group ${
                     pathname === link.href
                       ? "text-[#05dbf2]"
                       : "text-[#9bb6c1] hover:text-[#e6f7fb]"
@@ -142,7 +134,7 @@ const MainNavigation = () => {
                 >
                   {link.label}
                   <span
-                    className={`absolute -bottom-1 left-0 h-px bg-[#04b2d9] transition-all duration-300 ${
+                    className={`absolute -bottom-1 left-0 h-px bg-[#04b2d9] transition-[width] duration-150 ${
                       pathname === link.href
                         ? "w-full"
                         : "w-0 group-hover:w-full"
@@ -158,7 +150,7 @@ const MainNavigation = () => {
                   href="https://github.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
+                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150"
                 >
                   <Github size={20} />
                 </Link>
@@ -166,7 +158,7 @@ const MainNavigation = () => {
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
+                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150"
                 >
                   <Linkedin size={20} />
                 </Link>
@@ -174,13 +166,13 @@ const MainNavigation = () => {
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
+                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150"
                 >
                   <Instagram size={20} />
                 </Link>
               </div>
               <button
-                className="md:hidden text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300 p-1"
+                className="md:hidden text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150 p-1"
                 onClick={() => setMenuOpen((v) => !v)}
                 aria-label="Toggle menu"
               >

@@ -84,19 +84,71 @@ const SplineScene = () => {
     return () => observer.disconnect();
   }, [status]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const installWheelBridge = () => {
+      const frame = container.querySelector("iframe");
+      const html = frame?.srcdoc;
+      if (!frame || !html || html.includes("__portfolioSplineWheel")) return;
+
+      const document = new DOMParser().parseFromString(html, "text/html");
+      const script = document.createElement("script");
+      script.textContent = `window.addEventListener("wheel", (event) => {
+        event.preventDefault();
+        window.parent.postMessage({ type: "__portfolioSplineWheel", deltaX: event.deltaX, deltaY: event.deltaY, deltaMode: event.deltaMode }, "*");
+      }, { passive: false });`;
+      document.body.appendChild(script);
+      frame.srcdoc = `<!doctype html>\n${document.documentElement.outerHTML}`;
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      const frame = container.querySelector("iframe");
+      if (
+        event.source !== frame?.contentWindow ||
+        event.data?.type !== "__portfolioSplineWheel"
+      )
+        return;
+
+      const { deltaX, deltaY, deltaMode } = event.data;
+      if (!Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+      const unit =
+        deltaMode === 1 ? 16 : deltaMode === 2 ? window.innerHeight : 1;
+      window.scrollBy(deltaX * unit, deltaY * unit);
+    };
+
+    const observer = new MutationObserver(installWheelBridge);
+    observer.observe(container, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["srcdoc"],
+    });
+    window.addEventListener("message", onMessage);
+    installWheelBridge();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("message", onMessage);
+    };
+  }, [status]);
+
   if (status === "unavailable") return <SplineFallback />;
   if (status === "pending")
     return <div className="w-full h-full bg-[#0a0a0a]" aria-hidden="true" />;
 
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div
+      ref={containerRef}
+      className="w-full h-full"
+      onWheelCapture={(event) => event.stopPropagation()}
+    >
       <SplineErrorBoundary>
         <Spline
-          scene="https://prod.spline.design/jTqzWip9Z57AcMU7/scene.splinecode"
+          scene="https://prod.spline.design/ugrRUma4IHA2tD4s/scene.splinecode"
           style={{ width: "100%", height: "100%" }}
           onLoad={(app) => {
             appRef.current = app;
-            // If already off-screen when load completes, stop immediately
             if (!isVisibleRef.current) app.stop();
           }}
         />
@@ -288,7 +340,7 @@ const HeroSection = () => {
           <div className="flex flex-wrap gap-4 lg:flex-col lg:items-start flex-shrink-0">
             <Link
               href="/projects"
-              className="hero-cta group flex items-center gap-3 px-8 py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-pulse"
+              className="hero-cta group flex items-center gap-3 px-8 py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-150 glow-sm"
             >
               MOJE PROJEKTY
               <ArrowRight
@@ -298,7 +350,7 @@ const HeroSection = () => {
             </Link>
             <Link
               href="/contact"
-              className="hero-cta group flex items-center gap-3 px-8 py-4 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-[border-color,color] duration-300"
+              className="hero-cta group flex items-center gap-3 px-8 py-4 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-[border-color,color] duration-150"
             >
               KONTAKT
             </Link>
