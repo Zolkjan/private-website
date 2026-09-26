@@ -6,29 +6,20 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { ArrowRight, Mail, Github, Linkedin, Instagram } from "lucide-react";
+import { defaultSiteContent, useSiteContent } from "@/lib/firestore-hooks";
+import { useProfile } from "@/lib/profile";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const socials = [
-  {
-    label: "GitHub",
-    href: "https://github.com",
-    icon: <Github size={18} />,
-  },
-  {
-    label: "LinkedIn",
-    href: "https://linkedin.com",
-    icon: <Linkedin size={18} />,
-  },
-  {
-    label: "Instagram",
-    href: "https://instagram.com",
-    icon: <Instagram size={18} />,
-  },
-];
-
 const ContactSection = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const content = useSiteContent(defaultSiteContent);
+  const profile = useProfile();
+  const socials = [
+    { label: "GitHub", href: profile.github, icon: <Github size={18} /> },
+    { label: "LinkedIn", href: profile.linkedin, icon: <Linkedin size={18} /> },
+    { label: "Instagram", href: profile.instagram, icon: <Instagram size={18} /> },
+  ].filter((social) => social.href);
 
   useGSAP(
     () => {
@@ -109,17 +100,16 @@ const ContactSection = () => {
         </h2>
 
         <p className="contact-sub text-[#9bb6c1] text-lg max-w-md mx-auto leading-relaxed mb-12">
-          Masz pomysł na projekt? Szukasz współpracy? Napisz do mnie — odpowiem
-          tak szybko, jak to możliwe.
+          {content.contactDescription}
         </p>
 
         {/* Email */}
         <a
-          href="mailto:jan@creativepath.pl"
+          href={`mailto:${profile.email}`}
           className="contact-cta group inline-flex items-center gap-3 px-10 py-5 bg-[#04b2d9] text-[#0a0a0a] font-bold text-sm tracking-[0.25em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-md mb-6"
         >
           <Mail size={16} />
-          jan@creativepath.pl
+          {profile.email}
         </a>
 
         <div className="contact-cta block mb-12">
@@ -157,7 +147,7 @@ const ContactSection = () => {
 
       {/* Footer note */}
       <p className="text-center text-xs text-[#9bb6c1]/40 mt-20 tracking-widest uppercase">
-        © {new Date().getFullYear()} Jan Żółkiewski — CreativePath
+        © {new Date().getFullYear()} {profile.displayName} — CreativePath
       </p>
     </section>
   );

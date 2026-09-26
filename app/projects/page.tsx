@@ -11,26 +11,22 @@ import {
   ProjectCard,
   type Project,
 } from "@/components/ProjectsSection/ProjectsSection";
+import { useProjects } from "@/lib/firestore-hooks";
+import { useTechnologies } from "@/lib/technologies";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const allTags = [
-  "Wszystkie",
-  "Next.js",
-  "React",
-  "GSAP",
-  "Three.js",
-  "TypeScript",
-];
 
 export default function ProjectsPage() {
   const pageRef = useRef<HTMLDivElement>(null);
   const [activeTag, setActiveTag] = useState("Wszystkie");
+  const projects = useProjects(allProjects);
+  const { technologies } = useTechnologies();
+  const allTags = ["Wszystkie", ...new Set(projects.flatMap((project) => project.tags).sort())];
 
   const filtered: Project[] =
     activeTag === "Wszystkie"
-      ? allProjects
-      : allProjects.filter((p) => p.tags.includes(activeTag));
+      ? projects
+      : projects.filter((p) => p.tags.includes(activeTag));
 
   useGSAP(
     () => {
@@ -116,7 +112,7 @@ export default function ProjectsPage() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
         <div ref={gridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+            <ProjectCard key={project.id} project={project} index={i} technologies={technologies} />
           ))}
         </div>
 

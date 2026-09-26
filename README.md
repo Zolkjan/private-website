@@ -1,4 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a Next.js portfolio with Firebase Authentication and Cloud Firestore-backed projects and page copy.
+
+## Firebase setup
+
+1. Create a Firebase project, register a Web app, enable Email/Password in Authentication, create a Cloud Firestore database, and enable Firebase Storage by creating a bucket.
+2. Copy `.env.example` to `.env.local` and fill in the Web app configuration from Firebase project settings. These `NEXT_PUBLIC_*` values are public client configuration, not server secrets.
+3. Create the administrator account in Firebase Authentication. Copy its UID into `NEXT_PUBLIC_FIREBASE_ADMIN_UID`.
+4. Make sure the same administrator UID is used in `firestore.rules` and `storage.rules`. Publish each file in the matching Firebase console Rules tab.
+5. Restart the development server and open `/admin`. On first administrator login, the current project list and technology dictionary are initialized in Firestore.
+
+Firestore and Storage allow public reads for portfolio content and restrict writes to the configured administrator UID. Firestore stores projects in `projects`, page copy in `siteContent/main`, profile details in `siteContent/profile`, and the editable categorized technology dictionary in `technologies`. Storage accepts image files smaller than 10 MB under `projects/{projectId}/`.
+
+The admin panel manages projects, technology names/categories/colors, personal profile and contact details, and the hero, about, and contact copy. Uploaded project images are stored in Firebase Storage.
 
 ## Getting Started
 

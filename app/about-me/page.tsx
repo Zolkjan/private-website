@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Download } from "lucide-react";
+import { useProfile } from "@/lib/profile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -61,6 +62,7 @@ const values = [
 
 export default function AboutPage() {
   const pageRef = useRef<HTMLDivElement>(null);
+  const profile = useProfile();
 
   useGSAP(
     () => {
@@ -136,24 +138,23 @@ export default function AboutPage() {
           <h1 className="page-hero-title text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.9] uppercase tracking-tight mb-8">
             Cześć, jestem
             <br />
-            <span className="text-gradient">Jan Żółkiewski</span>
+            <span className="text-gradient">{profile.displayName}</span>
           </h1>
 
           <div className="page-hero-sub flex flex-col lg:flex-row lg:items-start gap-10 max-w-4xl">
             <p className="text-[#9bb6c1] leading-relaxed text-lg max-w-md">
-              Frontend Developer i&nbsp;Creative Coder z&nbsp;pasją do
-              nowoczesnych animacji i&nbsp;wyjątkowych interfejsów. Tworzę
-              strony, które nie tylko wyglądają świetnie, ale też zachwycają
-              ruchem i&nbsp;interakcją.
+              {profile.bio}
             </p>
             <div className="flex flex-wrap gap-3">
-              <a
-                href="/cv.pdf"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-sm"
-              >
-                <Download size={14} />
-                Pobierz CV
-              </a>
+              {profile.cvUrl && (
+                <a
+                  href={profile.cvUrl}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-sm"
+                >
+                  <Download size={14} />
+                  Pobierz CV
+                </a>
+              )}
               <Link
                 href="/contact"
                 className="inline-flex items-center gap-2 px-6 py-3 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-all duration-300"
@@ -260,7 +261,7 @@ export default function AboutPage() {
 
       {/* Footer */}
       <p className="text-center text-xs text-[#9bb6c1]/30 pb-8 tracking-widest uppercase">
-        © {new Date().getFullYear()} Jan Żółkiewski — CreativePath
+        © {new Date().getFullYear()} {profile.displayName} — CreativePath
       </p>
     </div>
   );

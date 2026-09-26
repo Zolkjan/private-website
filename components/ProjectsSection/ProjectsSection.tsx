@@ -5,12 +5,15 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, ExternalLink, Github } from "lucide-react";
+import { useProjects } from "@/lib/firestore-hooks";
+import { getTechnology, useTechnologies, type Technology } from "@/lib/technologies";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export interface Project {
-  id: number;
+  id: string | number;
   title: string;
   subtitle: string;
   description: string;
@@ -20,6 +23,16 @@ export interface Project {
   github?: string;
   featured?: boolean;
   accent: string;
+  order?: number;
+  imageUrl?: string;
+  imagePath?: string;
+  images?: ProjectImage[];
+}
+
+export interface ProjectImage {
+  url: string;
+  path?: string;
+  name?: string;
 }
 
 export const allProjects: Project[] = [
@@ -91,10 +104,11 @@ export const allProjects: Project[] = [
   },
 ];
 
-const featuredProjects = allProjects.filter((p) => p.featured);
-
 const ProjectsSection = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const projects = useProjects(allProjects);
+  const { technologies } = useTechnologies();
+  const featuredProjects = projects.filter((project) => project.featured);
 
   useGSAP(
     () => {
@@ -179,7 +193,7 @@ const ProjectsSection = () => {
         {/* Featured projects — large cards */}
         <div className="projects-grid grid lg:grid-cols-3 gap-6">
           {featuredProjects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+            <ProjectCard key={project.id} project={project} index={i} technologies={technologies} />
           ))}
         </div>
       </div>
@@ -190,9 +204,11 @@ const ProjectsSection = () => {
 const ProjectCard = ({
   project,
   index,
+  technologies,
 }: {
   project: Project;
   index: number;
+  technologies: Technology[];
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const rotateXRef = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
@@ -264,6 +280,20 @@ const ProjectCard = ({
         }}
       />
 
+      {(project.images?.[0]?.url || project.imageUrl) && (
+        <div className="group relative aspect-[16/10] w-full overflow-hidden border-b border-[#1a1a1a] bg-[#080c0e]">
+          <Image
+            src={project.images?.[0]?.url || project.imageUrl || ""}
+            alt={`Podgląd projektu ${project.title}`}
+            fill
+            unoptimized
+            sizes="(max-width: 1024px) 100vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/35 to-transparent" />
+        </div>
+      )}
+
       <div className="relative z-[1] p-8 flex flex-col flex-1">
         {/* Index */}
         <span className="text-xs tracking-[0.3em] text-[#9bb6c1] mb-6 block">
@@ -283,18 +313,14 @@ const ProjectCard = ({
 
         <p
           className="text-sm text-[#9bb6c1] leading-relaxed mb-8 flex-1"
-          dangerouslySetInnerHTML={{ __html: project.description }}
-        />
+        >
+          {project.description.replaceAll("&nbsp;", "\u00a0")}
+        </p>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-8">
           {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-3 py-1 text-[10px] tracking-[0.15em] uppercase text-[#9bb6c1] border border-[#1a1a1a] rounded-full"
-            >
-              {tag}
-            </span>
+            <TechnologyBadge key={tag} name={tag} technologies={technologies} />
           ))}
         </div>
 
@@ -322,12 +348,37 @@ const ProjectCard = ({
                 <ExternalLink size={16} />
               </a>
             )}
+            <Link
+              href={`/projects/${project.id}`}
+              aria-label={`Zobacz szczegóły projektu ${project.title}`}
+              title="Zobacz projekt"
+              className="text-[#9bb6c1] transition-colors hover:text-[#05dbf2]"
+            >
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+function TechnologyBadge({ name, technologies }: { name: string; technologies: Technology[] }) {
+  const technology = getTechnology(name, technologies);
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-[10px] font-medium tracking-[0.1em] uppercase"
+      style={{
+        color: technology.color,
+        borderColor: `${technology.color}45`,
+        backgroundColor: `${technology.color}10`,
+      }}
+    >
+      <span className="size-1.5 rounded-full" style={{ backgroundColor: technology.color }} />
+      {name}
+    </span>
+  );
+}
 
 export { ProjectCard };
 export default ProjectsSection;

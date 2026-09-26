@@ -6,22 +6,16 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { defaultSiteContent, useSiteContent } from "@/lib/firestore-hooks";
+import { useProfile } from "@/lib/profile";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const skills = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "GSAP",
-  "Three.js",
-  "Tailwind CSS",
-  "Node.js",
-  "Figma",
-];
-
 const AboutSection = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const content = useSiteContent(defaultSiteContent);
+  const profile = useProfile();
+  const initials = profile.displayName.split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toLocaleUpperCase("pl");
 
   useGSAP(
     () => {
@@ -120,20 +114,16 @@ const AboutSection = () => {
             </h2>
 
             <p className="about-text text-[#9bb6c1] leading-relaxed mb-5 max-w-md">
-              Jestem frontend developerem z&nbsp;zamiłowaniem do interaktywnych
-              animacji i&nbsp;nowoczesnych interfejsów. Łączę technologię
-              z&nbsp;designem, aby tworzyć wyjątkowe cyfrowe doświadczenia.
+              {content.aboutFirstParagraph}
             </p>
 
             <p className="about-text text-[#9bb6c1] leading-relaxed mb-10 max-w-md">
-              Specjalizuję się w&nbsp;React, Next.js i&nbsp;GSAP — narzędziach,
-              które pozwalają mi budować strony, które nie tylko wyglądają
-              świetnie, ale też zachwycają płynność animacji i&nbsp;interakcji.
+              {content.aboutSecondParagraph}
             </p>
 
             {/* Skills tags */}
             <div className="about-skills-grid flex flex-wrap gap-2 mb-10">
-              {skills.map((s) => (
+              {profile.skills.map((s) => (
                 <span
                   key={s}
                   className="about-skill-tag px-4 py-2 border border-[rgba(5,219,242,0.2)] text-[#9bb6c1] text-xs tracking-[0.15em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-colors duration-300"
@@ -185,17 +175,17 @@ const AboutSection = () => {
 
               <div className="mt-6 pt-6 border-t border-[#1a1a1a] flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#04b2d9] to-[#0a8cbf] flex items-center justify-center text-[#0a0a0a] font-bold text-sm">
-                  JŻ
+                  {initials}
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[#e6f7fb]">
-                    Jan Żółkiewski
+                    {profile.displayName}
                   </p>
-                  <p className="text-xs text-[#9bb6c1]">Frontend Developer</p>
+                  <p className="text-xs text-[#9bb6c1]">{profile.role}</p>
                 </div>
                 <div className="ml-auto flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs text-[#9bb6c1]">Dostępny</span>
+                  {profile.availability && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />}
+                  <span className="text-xs text-[#9bb6c1]">{profile.availability}</span>
                 </div>
               </div>
             </div>

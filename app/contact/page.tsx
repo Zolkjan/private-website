@@ -14,40 +14,22 @@ import {
   MapPin,
   Send,
 } from "lucide-react";
+import { useProfile } from "@/lib/profile";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const contactInfo = [
-  {
-    icon: <Mail size={18} />,
-    label: "Email",
-    value: "jan@creativepath.pl",
-    href: "mailto:jan@creativepath.pl",
-  },
-  {
-    icon: <MapPin size={18} />,
-    label: "Lokalizacja",
-    value: "Polska",
-    href: null,
-  },
-];
-
-const socials = [
-  { label: "GitHub", icon: <Github size={18} />, href: "https://github.com" },
-  {
-    label: "LinkedIn",
-    icon: <Linkedin size={18} />,
-    href: "https://linkedin.com",
-  },
-  {
-    label: "Instagram",
-    icon: <Instagram size={18} />,
-    href: "https://instagram.com",
-  },
-];
-
 export default function ContactPage() {
   const pageRef = useRef<HTMLDivElement>(null);
+  const profile = useProfile();
+  const contactInfo = [
+    ...(profile.email ? [{ icon: <Mail size={18} />, label: "Email", value: profile.email, href: `mailto:${profile.email}` }] : []),
+    ...(profile.location ? [{ icon: <MapPin size={18} />, label: "Lokalizacja", value: profile.location, href: null }] : []),
+  ];
+  const socials = [
+    { label: "GitHub", icon: <Github size={18} />, href: profile.github },
+    { label: "LinkedIn", icon: <Linkedin size={18} />, href: profile.linkedin },
+    { label: "Instagram", icon: <Instagram size={18} />, href: profile.instagram },
+  ].filter((social) => social.href);
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -197,12 +179,10 @@ export default function ContactPage() {
           </div>
 
           {/* Availability badge */}
-          <div className="mt-12 flex items-center gap-3">
+          {profile.availability && <div className="mt-12 flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-sm text-[#9bb6c1]">
-              Dostępny do nowych projektów
-            </span>
-          </div>
+            <span className="text-sm text-[#9bb6c1]">{profile.availability}</span>
+          </div>}
         </div>
 
         {/* Right form */}

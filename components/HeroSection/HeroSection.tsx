@@ -9,6 +9,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { defaultSiteContent, useSiteContent } from "@/lib/firestore-hooks";
+import { useProfile } from "@/lib/profile";
 
 const Spline = dynamic(() => import("@splinetool/react-spline"), {
   ssr: false,
@@ -161,6 +163,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const content = useSiteContent(defaultSiteContent);
+  const profile = useProfile();
 
   useGSAP(
     () => {
@@ -242,7 +246,8 @@ const HeroSection = () => {
     { scope: containerRef },
   );
 
-  const nameWords = ["JAN", "ŻÓŁKIEWSKI"];
+  const nameParts = profile.displayName.trim().toLocaleUpperCase("pl").split(/\s+/).filter(Boolean);
+  const nameWords = nameParts.length > 1 ? [nameParts[0], nameParts.slice(1).join(" ")] : nameParts;
 
   return (
     <section ref={containerRef} className="grain relative bg-[#0a0a0a]">
@@ -277,7 +282,7 @@ const HeroSection = () => {
           <div className="hero-role animate-float flex items-center gap-3">
             <span className="hidden sm:inline-block w-8 h-px bg-[#04b2d9]" />
             <span className="text-[10px] sm:text-xs tracking-[0.35em] text-[#04b2d9] uppercase font-medium text-center">
-              Frontend Developer &amp; Creative Coder
+              {profile.role}
             </span>
             <span className="hidden sm:inline-block w-8 h-px bg-[#04b2d9]" />
           </div>
@@ -320,9 +325,7 @@ const HeroSection = () => {
           {/* Description + tech badges */}
           <div className="max-w-lg">
             <p className="hero-desc text-[#9bb6c1] text-base sm:text-lg leading-relaxed mb-6">
-              Specjalizuję się w&nbsp;nowoczesnych interfejsach, płynnych
-              animacjach GSAP i&nbsp;immersyjnych scenach 3D — projektuję
-              z&nbsp;pasją i&nbsp;buduję z&nbsp;precyzją.
+              {content.heroDescription}
             </p>
             <div className="flex flex-wrap gap-2">
               {["Next.js 15", "GSAP", "Three.js", "TypeScript"].map((tech) => (
@@ -369,9 +372,9 @@ const HeroSection = () => {
         {/* Stats */}
         <div className="flex flex-wrap gap-8 sm:gap-16 pt-10">
           {[
-            { num: "3+", label: "Lata doświadczenia" },
-            { num: "20+", label: "Projektów" },
-            { num: "100%", label: "Zaangażowania" },
+            { num: profile.experience, label: "Lata doświadczenia" },
+            { num: profile.projectCount, label: "Projektów" },
+            { num: profile.commitment, label: "Zaangażowania" },
           ].map((stat) => (
             <div key={stat.label} className="hero-stat">
               <p className="text-3xl sm:text-4xl font-bold text-gradient">

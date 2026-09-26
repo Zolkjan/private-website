@@ -8,6 +8,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { Github, Instagram, Linkedin, Menu, X } from "lucide-react";
 import FullCreativePathLogo from "@/public/FullCreativePathLogo.svg";
+import { useProfile } from "@/lib/profile";
 
 const navLinks = [
   { href: "/", label: "STRONA GŁÓWNA" },
@@ -17,11 +18,23 @@ const navLinks = [
 ];
 
 const MainNavigation = () => {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/admin")) return null;
+  return <PublicNavigation pathname={pathname} />;
+};
+
+const PublicNavigation = ({ pathname }: { pathname: string }) => {
   const headerRef = useRef<HTMLElement>(null);
   const navBarRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const profile = useProfile();
+  const socialLinks = [
+    { href: profile.github, icon: <Github size={20} /> },
+    { href: profile.linkedin, icon: <Linkedin size={20} /> },
+    { href: profile.instagram, icon: <Instagram size={20} /> },
+  ].filter((social) => social.href);
 
   // Direct DOM style mutation — no React re-renders on every scroll event
   useEffect(() => {
@@ -146,30 +159,11 @@ const MainNavigation = () => {
 
             <div className="flex items-center gap-3">
               <div className="hidden md:flex items-center gap-3">
-                <Link
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150"
-                >
-                  <Github size={20} />
-                </Link>
-                <Link
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150"
-                >
-                  <Linkedin size={20} />
-                </Link>
-                <Link
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150"
-                >
-                  <Instagram size={20} />
-                </Link>
+                {socialLinks.map((social) => (
+                  <a key={social.href} href={social.href} target="_blank" rel="noopener noreferrer" className="text-[#9bb6c1] transition-colors duration-150 hover:text-[#05dbf2]">
+                    {social.icon}
+                  </a>
+                ))}
               </div>
               <button
                 className="md:hidden text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150 p-1"
@@ -209,19 +203,15 @@ const MainNavigation = () => {
         </nav>
 
         <div className="flex gap-5 mt-16">
-          {[
-            { href: "https://github.com", icon: <Github size={20} /> },
-            { href: "https://linkedin.com", icon: <Linkedin size={20} /> },
-            { href: "https://instagram.com", icon: <Instagram size={20} /> },
-          ].map((s, i) => (
+          {socialLinks.map((social) => (
             <a
-              key={i}
-              href={s.href}
+              key={social.href}
+              href={social.href}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
             >
-              {s.icon}
+              {social.icon}
             </a>
           ))}
         </div>
