@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Card } from "@/components/ui/card";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -103,22 +104,6 @@ const SkillsSection = () => {
         },
       });
 
-      // Animated progress bars
-      gsap.from(".skill-bar-fill", {
-        scaleX: 0,
-        duration: 1.2,
-        stagger: 0.08,
-        ease: "power3.inOut",
-        transformOrigin: "left center",
-        onComplete() {
-          gsap.set(".skill-bar-fill", { clearProps: "scaleX,transform" });
-        },
-        scrollTrigger: {
-          trigger: ".skills-grid",
-          start: "top 70%",
-          once: true,
-        },
-      });
     },
     { scope: containerRef },
   );
@@ -162,40 +147,23 @@ const SkillsSection = () => {
         {/* Categories grid */}
         <div className="skills-grid grid md:grid-cols-3 gap-6 mb-16">
           {categories.map((cat) => (
-            <div
+            <Card
               key={cat.title}
-              className="skills-category glass-card rounded-2xl p-8 hover:border-[rgba(5,219,242,0.2)] transition-colors duration-300 group"
+              className="skills-category glass-card group gap-0 rounded-2xl p-8"
             >
-              <h3 className="text-xs tracking-[0.3em] uppercase text-[#04b2d9] mb-6 group-hover:text-[#05dbf2] transition-colors duration-300">
+              <h3 className="text-xs tracking-[0.3em] uppercase text-[#04b2d9] mb-5 group-hover:text-[#05dbf2] transition-colors duration-300">
                 {cat.title}
               </h3>
-              <ul className="space-y-4">
+              <ul className="space-y-0 divide-y divide-white/[0.07]">
                 {cat.items.map((item, idx) => (
-                  <li key={item} className="flex items-center gap-3">
-                    <div className="flex-1">
-                      <div className="flex justify-between mb-1.5">
-                        <span className="text-sm text-[#e6f7fb] font-medium">
-                          {item}
-                        </span>
-                        <span className="text-xs text-[#9bb6c1]">
-                          {[95, 90, 88, 80, 75][idx] || 80}%
-                        </span>
-                      </div>
-                      <div className="h-px bg-[#1a1a1a] rounded-full overflow-hidden">
-                        <div
-                          className="skill-bar-fill h-full rounded-full origin-left"
-                          style={{
-                            width: `${[95, 90, 88, 80, 75][idx] || 80}%`,
-                            background:
-                              "linear-gradient(to right, #04b2d9, #05dbf2)",
-                          }}
-                        />
-                      </div>
-                    </div>
+                  <li key={item} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                    <span className="font-mono text-[10px] tabular-nums text-[#55717a]">0{idx + 1}</span>
+                    <span className="text-sm font-medium text-[#e6f7fb]">{item}</span>
+                    <span className="ml-auto size-1.5 rounded-full bg-[#05dbf2]/70 shadow-[0_0_10px_rgba(5,219,242,.35)]" />
                   </li>
                 ))}
               </ul>
-            </div>
+            </Card>
           ))}
         </div>
 

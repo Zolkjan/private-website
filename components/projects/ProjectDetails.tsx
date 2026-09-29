@@ -148,20 +148,21 @@ export default function ProjectDetails({ projectId }: { projectId: string }) {
           </div>
 
           {images.length > 1 && (
-            <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-7" role="list" aria-label="Wybierz zdjęcie">
+            <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-7" role="group" aria-label="Wybierz zdjęcie">
               {images.map((image, index) => (
-                <button
+                <Button
                   key={`${image.path ?? image.url}-${index}`}
                   type="button"
-                  role="listitem"
+                  variant="ghost"
+                  size="icon"
                   aria-label={`Pokaż zdjęcie ${index + 1}`}
                   aria-pressed={index === activeIndex}
                   onClick={() => setActiveIndex(index)}
-                  className={`group relative aspect-[16/10] overflow-hidden border transition-colors ${index === activeIndex ? "border-[#05dbf2]" : "border-[#1b292d] opacity-65 hover:border-[#527078] hover:opacity-100"}`}
+                  className={`group relative h-auto w-full aspect-[16/10] overflow-hidden rounded-none border p-0 transition-colors hover:bg-transparent ${index === activeIndex ? "border-[#05dbf2]" : "border-[#1b292d] opacity-65 hover:border-[#527078] hover:opacity-100"}`}
                 >
                   <Image src={image.url} alt="" fill unoptimized sizes="(max-width: 640px) 33vw, 180px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                   <span className="absolute bottom-1.5 left-2 text-[10px] tabular-nums text-white drop-shadow">{String(index + 1).padStart(2, "0")}</span>
-                </button>
+                </Button>
               ))}
             </div>
           )}

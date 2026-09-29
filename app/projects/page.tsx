@@ -13,6 +13,7 @@ import {
 } from "@/components/ProjectsSection/ProjectsSection";
 import { useProjects } from "@/lib/firestore-hooks";
 import { useTechnologies } from "@/lib/technologies";
+import { Button } from "@/components/ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,7 +63,7 @@ export default function ProjectsPage() {
 
   return (
     <div ref={pageRef} className="min-h-screen bg-[#0a0a0a]">
-      <div className="pt-32 pb-0 max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="mx-auto max-w-7xl px-6 pt-24 pb-0 sm:pt-32 lg:px-12">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-xs tracking-[0.3em] text-[#9bb6c1] uppercase hover:text-[#04b2d9] transition-colors duration-300 mb-16"
@@ -79,7 +80,7 @@ export default function ProjectsPage() {
               Portfolio
             </span>
           </div>
-          <h1 className="page-hero-title text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.9] uppercase tracking-tight mb-6">
+          <h1 className="page-hero-title text-[clamp(2.4rem,9vw,8rem)] font-bold leading-[0.9] uppercase tracking-tight mb-6">
             Moje <span className="text-gradient">Projekty</span>
           </h1>
           <p className="text-[#9bb6c1] text-lg max-w-lg leading-relaxed">
@@ -91,9 +92,13 @@ export default function ProjectsPage() {
         {/* Filter tags */}
         <div className="flex flex-wrap gap-3 mb-12">
           {allTags.map((tag) => (
-            <button
+            <Button
               key={tag}
+              type="button"
+              variant="outline"
+              size="sm"
               onClick={() => onFilterChange(tag)}
+              aria-pressed={activeTag === tag}
               className={`px-5 py-2 text-xs tracking-[0.15em] uppercase rounded-full border transition-all duration-300 ${
                 activeTag === tag
                   ? "border-[#04b2d9] text-[#05dbf2] bg-[rgba(5,219,242,0.08)]"
@@ -101,7 +106,7 @@ export default function ProjectsPage() {
               }`}
             >
               {tag}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

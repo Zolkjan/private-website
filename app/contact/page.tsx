@@ -15,6 +15,9 @@ import {
   Send,
 } from "lucide-react";
 import { useProfile } from "@/lib/profile";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -99,7 +102,7 @@ export default function ContactPage() {
 
   return (
     <div ref={pageRef} className="min-h-screen bg-[#0a0a0a]">
-      <div className="pt-32 pb-0 max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="mx-auto max-w-7xl px-6 pt-24 pb-0 sm:pt-32 lg:px-12">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-xs tracking-[0.3em] text-[#9bb6c1] uppercase hover:text-[#04b2d9] transition-colors duration-300 mb-16"
@@ -115,7 +118,7 @@ export default function ContactPage() {
           </span>
         </div>
 
-        <h1 className="page-hero-title text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.9] uppercase tracking-tight mb-16">
+        <h1 className="page-hero-title text-[clamp(2rem,10vw,7rem)] font-bold leading-[0.92] uppercase tracking-tight mb-12 sm:mb-16">
           Porozmawiajmy
           <br />
           <span className="text-gradient">o projekcie</span>
@@ -203,72 +206,76 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid sm:grid-cols-2 gap-5">
                 <div className="form-field">
-                  <label className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
+                  <label htmlFor="contact-name" className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
                     Imię i nazwisko
                   </label>
-                  <input
+                  <Input
+                    id="contact-name"
                     type="text"
                     name="name"
                     required
                     value={formState.name}
                     onChange={handleChange}
                     placeholder="Jan Kowalski"
-                    className="w-full px-5 py-4 bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl text-[#e6f7fb] text-sm placeholder:text-[#9bb6c1]/40 focus:outline-none focus:border-[rgba(5,219,242,0.4)] transition-colors duration-300"
+                    className="h-12 rounded-xl border-white/10 bg-white/[0.03] px-4 text-sm placeholder:text-[#789099] focus-visible:border-[#05dbf2]/50 focus-visible:ring-[#05dbf2]/20"
                   />
                 </div>
                 <div className="form-field">
-                  <label className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
+                  <label htmlFor="contact-email" className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
                     Email
                   </label>
-                  <input
+                  <Input
+                    id="contact-email"
                     type="email"
                     name="email"
                     required
                     value={formState.email}
                     onChange={handleChange}
                     placeholder="jan@example.com"
-                    className="w-full px-5 py-4 bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl text-[#e6f7fb] text-sm placeholder:text-[#9bb6c1]/40 focus:outline-none focus:border-[rgba(5,219,242,0.4)] transition-colors duration-300"
+                    className="h-12 rounded-xl border-white/10 bg-white/[0.03] px-4 text-sm placeholder:text-[#789099] focus-visible:border-[#05dbf2]/50 focus-visible:ring-[#05dbf2]/20"
                   />
                 </div>
               </div>
 
               <div className="form-field">
-                <label className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
+                <label htmlFor="contact-subject" className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
                   Temat
                 </label>
-                <input
+                <Input
+                  id="contact-subject"
                   type="text"
                   name="subject"
                   required
                   value={formState.subject}
                   onChange={handleChange}
                   placeholder="Projekt strony / Współpraca / Inne"
-                  className="w-full px-5 py-4 bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl text-[#e6f7fb] text-sm placeholder:text-[#9bb6c1]/40 focus:outline-none focus:border-[rgba(5,219,242,0.4)] transition-colors duration-300"
+                  className="h-12 rounded-xl border-white/10 bg-white/[0.03] px-4 text-sm placeholder:text-[#789099] focus-visible:border-[#05dbf2]/50 focus-visible:ring-[#05dbf2]/20"
                 />
               </div>
 
               <div className="form-field">
-                <label className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
+                <label htmlFor="contact-message" className="block text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-2">
                   Wiadomość
                 </label>
-                <textarea
+                <Textarea
+                  id="contact-message"
                   name="message"
                   required
                   rows={6}
                   value={formState.message}
                   onChange={handleChange}
                   placeholder="Opisz swój projekt lub pytanie..."
-                  className="w-full px-5 py-4 bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl text-[#e6f7fb] text-sm placeholder:text-[#9bb6c1]/40 focus:outline-none focus:border-[rgba(5,219,242,0.4)] transition-colors duration-300 resize-none"
+                  className="min-h-36 resize-y rounded-xl border-white/10 bg-white/[0.03] px-4 py-3 text-sm placeholder:text-[#789099] focus-visible:border-[#05dbf2]/50 focus-visible:ring-[#05dbf2]/20"
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
-                className="submit-btn form-field group flex items-center gap-3 px-8 py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-sm tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-sm"
+                className="submit-btn form-field group h-12 rounded-full bg-[#04b2d9] px-7 text-xs font-bold tracking-[0.16em] text-[#0a0a0a] uppercase hover:bg-[#05dbf2] glow-sm"
               >
                 <Send size={14} />
                 Wyślij wiadomość
-              </button>
+              </Button>
             </form>
           )}
         </div>

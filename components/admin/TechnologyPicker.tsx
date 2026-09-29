@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,14 +62,16 @@ export default function TechnologyPicker({
               >
                 <span className="size-1.5 rounded-full" style={{ backgroundColor: technology.color }} />
                 {name}
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon-sm"
                   aria-label={`Usuń technologię ${name}`}
                   onClick={() => toggle(name, false)}
                   className="ml-0.5 text-current opacity-70 transition-opacity hover:opacity-100"
                 >
                   <X size={12} />
-                </button>
+                </Button>
               </span>
             );
           })}

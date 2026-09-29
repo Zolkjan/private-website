@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Download } from "lucide-react";
 import { useProfile } from "@/lib/profile";
+import { Card } from "@/components/ui/card";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -117,7 +118,7 @@ export default function AboutPage() {
   return (
     <div ref={pageRef} className="min-h-screen bg-[#0a0a0a]">
       {/* Back nav */}
-      <div className="pt-32 pb-0 max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="mx-auto max-w-7xl px-6 pt-24 pb-0 sm:pt-32 lg:px-12">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-xs tracking-[0.3em] text-[#9bb6c1] uppercase hover:text-[#04b2d9] transition-colors duration-300 mb-16"
@@ -135,7 +136,7 @@ export default function AboutPage() {
             </span>
           </div>
 
-          <h1 className="page-hero-title text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.9] uppercase tracking-tight mb-8">
+          <h1 className="page-hero-title text-[clamp(2.4rem,9vw,8rem)] font-bold leading-[0.9] uppercase tracking-tight mb-8">
             Cześć, jestem
             <br />
             <span className="text-gradient">{profile.displayName}</span>
@@ -223,16 +224,16 @@ export default function AboutPage() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {values.map((v) => (
-            <div
+            <Card
               key={v.title}
-              className="value-card glass-card rounded-2xl p-7 hover:border-[rgba(5,219,242,0.2)] transition-all duration-300 group"
+              className="value-card glass-card group gap-0 rounded-2xl p-7"
             >
               <div className="text-3xl mb-4">{v.icon}</div>
               <h3 className="font-bold text-[#e6f7fb] mb-3 group-hover:text-[#05dbf2] transition-colors duration-300">
                 {v.title}
               </h3>
               <p className="text-sm text-[#9bb6c1] leading-relaxed">{v.desc}</p>
-            </div>
+            </Card>
           ))}
         </div>
       </div>

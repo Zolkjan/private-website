@@ -9,6 +9,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { defaultSiteContent, useSiteContent } from "@/lib/firestore-hooks";
 import { useProfile } from "@/lib/profile";
 
@@ -252,7 +253,7 @@ const HeroSection = () => {
   return (
     <section ref={containerRef} className="grain relative bg-[#0a0a0a]">
       {/* ── SPLINE VIEWPORT ── */}
-      <div className="relative h-screen overflow-hidden">
+      <div className="relative h-[100svh] min-h-[520px] overflow-hidden sm:min-h-[600px] lg:h-screen">
         {/* Spline background */}
         <div
           className="spline-container absolute inset-0 z-0 w-full h-full"
@@ -265,124 +266,99 @@ const HeroSection = () => {
           <SplineScene />
         </div>
 
-        {/* Bottom gradient — covers legs area */}
+        {/* Fade and labels are kept along the bottom edge so the Spline scene stays visible and interactive. */}
         <div
-          className="absolute bottom-0 left-0 right-0 z-[1] pointer-events-none"
+          className="pointer-events-none absolute bottom-0 left-0 right-0 z-[1]"
           style={{
-            height: "45%",
+            height: "38%",
             background:
-              "linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.85) 40%, transparent 100%)",
+              "linear-gradient(to top, rgba(10,10,10,0.99) 0%, rgba(10,10,10,0.84) 40%, rgba(10,10,10,0.3) 76%, transparent 100%)",
           }}
         />
-        {/* Top fade */}
-        <div className="absolute top-0 left-0 right-0 h-32 z-[1] bg-gradient-to-b from-[#0a0a0a] to-transparent pointer-events-none" />
 
-        {/* ── TOP: role badge centered ── */}
-        <div className="absolute top-0 left-0 right-0 z-[2] flex justify-center pt-28 sm:pt-32 px-4">
-          <div className="hero-role animate-float flex items-center gap-3">
-            <span className="hidden sm:inline-block w-8 h-px bg-[#04b2d9]" />
-            <span className="text-[10px] sm:text-xs tracking-[0.35em] text-[#04b2d9] uppercase font-medium text-center">
-              {profile.role}
-            </span>
-            <span className="hidden sm:inline-block w-8 h-px bg-[#04b2d9]" />
-          </div>
-        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]">
+          <div className="mx-auto max-w-7xl px-6 pb-7 sm:px-10 sm:pb-9 lg:px-12">
+            <div className="hero-role grid gap-4 border-t border-white/20 pt-4 sm:pt-5 md:grid-cols-[1fr_auto] md:items-end md:gap-8">
+              <div className="min-w-0">
+                <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="size-1.5 rounded-full bg-[#05dbf2] shadow-[0_0_12px_rgba(5,219,242,.7)]" />
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#05dbf2] sm:text-[10px]">Projektowanie stron · Frontend development</span>
+                  {profile.location && <span className="text-[9px] uppercase tracking-[0.14em] text-[#a8bdc3] sm:text-[10px]">/ {profile.location}</span>}
+                </div>
+                <p className="max-w-3xl text-base font-semibold leading-snug text-white drop-shadow-[0_2px_12px_rgba(0,0,0,.8)] sm:text-xl">
+                  Strony internetowe i aplikacje webowe
+                </p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-[#d0dcdf] drop-shadow-[0_1px_8px_rgba(0,0,0,.9)] sm:text-xs">
+                  Nowoczesne interfejsy, responsywny frontend i animacje GSAP.
+                </p>
+              </div>
 
-        {/* Scroll indicator — mouse icon */}
-        <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-[3]">
-          <span className="text-[9px] tracking-[0.5em] text-[#9bb6c1] uppercase">
-            Scroll
-          </span>
-          <div className="w-5 h-8 rounded-full border border-[rgba(5,219,242,0.45)] flex justify-center pt-1.5">
-            <span className="w-0.5 h-2 rounded-full bg-[#04b2d9] animate-bounce-slow block" />
+              <div className="flex items-center justify-between gap-5 md:flex-col md:items-end md:pb-0.5">
+                {profile.availability && (
+                  <span className="inline-flex items-center gap-2 text-[9px] text-[#e0e9eb] drop-shadow-[0_1px_8px_rgba(0,0,0,.9)] sm:text-[10px]">
+                    <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,.6)]" />
+                    {profile.availability}
+                  </span>
+                )}
+                <a href="#o-mnie" className="hero-scroll pointer-events-auto group inline-flex shrink-0 items-center gap-2 text-[9px] font-medium uppercase tracking-[0.17em] text-white drop-shadow-[0_1px_8px_rgba(0,0,0,.9)] transition-colors hover:text-[#05dbf2]">
+                  Poznaj mnie
+                  <ArrowRight size={13} className="rotate-90 text-[#05dbf2] transition-transform group-hover:translate-y-0.5" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── BELOW SPLINE ── */}
       <div className="glow-line" />
 
-      {/* Big heading */}
-      <div className="hero-heading relative z-[2] w-full px-4 pt-16 sm:pt-20 pb-4 text-center">
-        <h1 className="font-bold leading-[0.85] tracking-tight uppercase">
-          {nameWords.map((word) => (
-            <div key={word}>
-              <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)]">
-                {word}
-              </span>
-            </div>
-          ))}
+      <div className="hero-heading relative z-[2] mx-auto w-full max-w-7xl px-6 pb-10 pt-14 sm:px-10 sm:pb-12 sm:pt-16 lg:px-12 lg:pt-20">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-16">
           <div>
-            <span className="hero-word inline-block whitespace-nowrap text-[clamp(2.2rem,8vw,7.5rem)] text-shimmer glow-text">
-              PORTFOLIO
-            </span>
-          </div>
-        </h1>
-      </div>
-
-      <div className="relative z-[2] w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 sm:py-16">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-20">
-          {/* Description + tech badges */}
-          <div className="max-w-lg">
-            <p className="hero-desc text-[#9bb6c1] text-base sm:text-lg leading-relaxed mb-6">
-              {content.heroDescription}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {["Next.js 15", "GSAP", "Three.js", "TypeScript"].map((tech) => (
-                <span
-                  key={tech}
-                  className="hero-cta text-[10px] tracking-[0.2em] uppercase px-3 py-1.5 rounded-full border border-[rgba(5,219,242,0.15)] text-[#9bb6c1] hover:border-[rgba(5,219,242,0.4)] hover:text-[#e6f7fb] transition-colors duration-300"
-                >
-                  {tech}
+            <div className="hero-role mb-5 flex items-center gap-3">
+              <span className="h-px w-8 bg-[#05dbf2]" />
+              <span className="text-[10px] uppercase tracking-[0.3em] text-[#05dbf2]">Portfolio / {profile.location || "Creative development"}</span>
+            </div>
+            <h1 className="font-bold uppercase leading-[0.88] tracking-[-0.055em]">
+              {nameWords.map((word) => (
+                <span key={word} className="block overflow-hidden pb-1">
+                  <span className="hero-word inline-block max-w-full break-words text-[clamp(2.2rem,7.5vw,6.8rem)]">{word}</span>
                 </span>
               ))}
-            </div>
+            </h1>
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-4 lg:flex-col lg:items-start flex-shrink-0">
-            <Link
-              href="/projects"
-              className="hero-cta group flex items-center gap-3 px-8 py-4 bg-[#04b2d9] text-[#0a0a0a] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-150 glow-sm"
-            >
-              MOJE PROJEKTY
-              <ArrowRight
-                size={16}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
-            <Link
-              href="/contact"
-              className="hero-cta group flex items-center gap-3 px-8 py-4 border border-[rgba(5,219,242,0.3)] text-[#e6f7fb] font-bold text-xs tracking-[0.2em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-[border-color,color] duration-150"
-            >
-              KONTAKT
-            </Link>
+          <div className="lg:pb-2">
+            <p className="hero-desc max-w-xl text-sm leading-7 text-[#a8bdc3] sm:text-base sm:leading-8">
+              {content.heroDescription}
+            </p>
+            <div className="hero-cta mt-6 flex flex-wrap gap-2">
+              {["Next.js", "GSAP", "Three.js", "TypeScript"].map((tech) => (
+                <span key={tech} className="rounded-full border border-white/10 bg-white/[0.025] px-3 py-1.5 text-[9px] uppercase tracking-[0.16em] text-[#a8bdc3]">{tech}</span>
+              ))}
+            </div>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button asChild className="hero-cta group h-11 rounded-full bg-[#05dbf2] px-5 font-semibold text-[#071014] hover:bg-[#7cecf7]">
+                <Link href="/projects">Wybrane projekty <ArrowRight className="transition-transform group-hover:translate-x-1" /></Link>
+              </Button>
+              <Button asChild variant="outline" className="hero-cta h-11 rounded-full border-white/15 bg-white/[0.03] px-5 text-[#dce5e7] hover:border-[#05dbf2]/45 hover:bg-white/[0.06] hover:text-white">
+                <Link href="/contact">Kontakt</Link>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Animated separator */}
-        <div
-          className="hero-line mt-12 h-px"
-          style={{
-            background:
-              "linear-gradient(to right, transparent, rgba(255,255,255,0.08) 50%, transparent)",
-          }}
-        />
+        <div className="hero-line mt-10 h-px bg-gradient-to-r from-[#05dbf2]/50 via-white/10 to-transparent sm:mt-12" />
 
-        {/* Stats */}
-        <div className="flex flex-wrap gap-8 sm:gap-16 pt-10">
+        <div className="flex flex-wrap gap-x-10 gap-y-5 pt-6 sm:gap-x-16 sm:pt-8">
           {[
             { num: profile.experience, label: "Lata doświadczenia" },
             { num: profile.projectCount, label: "Projektów" },
             { num: profile.commitment, label: "Zaangażowania" },
           ].map((stat) => (
             <div key={stat.label} className="hero-stat">
-              <p className="text-3xl sm:text-4xl font-bold text-gradient">
-                {stat.num}
-              </p>
-              <p className="text-xs tracking-[0.2em] text-[#9bb6c1] uppercase mt-1">
-                {stat.label}
-              </p>
+              <p className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">{stat.num}</p>
+              <p className="mt-1 text-[9px] uppercase tracking-[0.17em] text-[#819399] sm:text-[10px]">{stat.label}</p>
             </div>
           ))}
         </div>

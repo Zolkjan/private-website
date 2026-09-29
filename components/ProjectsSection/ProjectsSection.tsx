@@ -9,6 +9,7 @@ import Image from "next/image";
 import { ArrowRight, ExternalLink, Github } from "lucide-react";
 import { useProjects } from "@/lib/firestore-hooks";
 import { getTechnology, useTechnologies, type Technology } from "@/lib/technologies";
+import { Card } from "@/components/ui/card";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -259,9 +260,9 @@ const ProjectCard = ({
   };
 
   return (
-    <div
+    <Card
       ref={cardRef}
-      className="project-card relative rounded-2xl bg-[#0d0d0d] border border-[#1a1a1a] overflow-hidden flex flex-col"
+      className="project-card relative gap-0 rounded-2xl border-[#1d2a2e] bg-[#0d1315] py-0 shadow-[0_24px_64px_rgba(0,0,0,0.22)] overflow-hidden flex flex-col"
       onMouseEnter={onEnter}
       onMouseMove={onMouseMove}
       onMouseLeave={onLeave}
@@ -359,7 +360,7 @@ const ProjectCard = ({
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

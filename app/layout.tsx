@@ -12,9 +12,9 @@ const montserratAlternates = Montserrat_Alternates({
 });
 
 export const metadata: Metadata = {
-  title: "Jan Żółkiewski — CreativePath",
+  title: "Jan Żółkiewski — strony internetowe i aplikacje | CreativePath",
   description:
-    "Frontend Developer & Creative Coder — nowoczesne strony, animacje GSAP, Three.js, Next.js.",
+    "Projektuję i tworzę nowoczesne strony internetowe oraz aplikacje webowe. Interaktywne doświadczenia, animacje GSAP i rozwiązania w Next.js.",
 };
 
 export default function RootLayout({

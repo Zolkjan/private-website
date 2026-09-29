@@ -13,12 +13,14 @@
   border-radius: 99px;
 }
 
-/* ─── Colored cursor ───────────────────────────────────────── */
-* {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='20'%3E%3Cpath d='M1 1 L1 15 L5 11 L8 17 L10 16 L7 10 L12 10 Z' fill='%2304b2d9' stroke='%230a0a0a' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E")
-      1 1,
-    default !important;
+html {
+  scrollbar-color: #087f98 #0a0a0a;
+  scrollbar-width: thin;
+}
+
+::selection {
+  color: #061014;
+  background: #05dbf2;
 }
 
 /* ─── Typography Utilities ──────────────────────────────────── */
@@ -127,13 +129,19 @@
 
 /* ─── Section Layout ────────────────────────────────────────── */
 .section-padding {
-  padding: 7rem 0 8rem;
+  padding: clamp(4rem, 9vw, 7rem) 0;
 }
 
 /* ─── Glass card ────────────────────────────────────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(5, 219, 242, 0.1);
+  background: linear-gradient(145deg, rgba(18, 25, 28, 0.92), rgba(10, 14, 16, 0.92));
+  border: 1px solid rgba(149, 190, 201, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  transition: border-color 220ms ease, transform 220ms ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(5, 219, 242, 0.24);
 }
 
 /* ─── Horizontal rule with glow ─────────────────────────────── */
@@ -174,7 +182,6 @@
 }
 .animate-marquee {
   animation: marquee 25s linear infinite;
-  will-change: transform;
 }
 
 /* ─── Grain texture on hero — static, no animation ─────────── */
@@ -194,6 +201,14 @@
 }
 /* ─── Respect prefers-reduced-motion ────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
   .text-shimmer {
     animation: none;
     background-position: 0% center;
@@ -210,7 +225,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-montserrat-alternates);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -253,6 +268,9 @@
   /* Ciemna baza + jasny tekst z lekkim niebieskim tonem */
   --background: #0d0d0d;
   --foreground: #e6f7fb;
+  --border: #1d2a2e;
+  --input: #26373d;
+  --ring: #087f98;
 
   /* Karty / popupy */
   --card: #111111;
@@ -276,10 +294,6 @@
   --destructive: #b91c1c;
 
   /* Ramki / inputy / ring */
-  --border: #1a1a1a;
-  --input: #1f1f1f;
-  --ring: #0a8cbf;
-
   /* Wykresy – w większości szarości + akcenty */
   --chart-1: #05dbf2; /* akcent jasny */
   --chart-2: #04b2d9; /* akcent średni */
@@ -301,6 +315,9 @@
 .dark {
   --background: #0d0d0d;
   --foreground: #e6f7fb;
+  --border: #1d2a2e;
+  --input: #26373d;
+  --ring: #087f98;
 
   --card: #111111;
   --card-foreground: #e6f7fb;
@@ -319,10 +336,6 @@
   --accent-foreground: #0d0d0d;
 
   --destructive: #b91c1c;
-
-  --border: #1a1a1a;
-  --input: #1f1f1f;
-  --ring: #0a8cbf;
 
   --chart-1: #05dbf2;
   --chart-2: #04b2d9;

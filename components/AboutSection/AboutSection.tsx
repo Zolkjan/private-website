@@ -155,7 +155,7 @@ const AboutSection = () => {
                 {[
                   { icon: "⚡", label: "Animacje", val: "GSAP / Motion" },
                   { icon: "🎨", label: "Design", val: "Figma / Framer" },
-                  { icon: "⚙️", label: "Framework", val: "Next.js 15" },
+                  { icon: "⚙️", label: "Framework", val: "Next.js" },
                   { icon: "🌐", label: "3D & WebGL", val: "Three.js / Spline" },
                 ].map((item) => (
                   <div

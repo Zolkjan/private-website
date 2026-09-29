@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { Github, Instagram, Linkedin, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import FullCreativePathLogo from "@/public/FullCreativePathLogo.svg";
 import { useProfile } from "@/lib/profile";
 
@@ -41,38 +42,39 @@ const PublicNavigation = ({ pathname }: { pathname: string }) => {
     const bar = navBarRef.current;
     if (!bar) return;
 
-    let scrolled = false;
+    let scrolled = window.scrollY > 30;
 
     const applyStyle = (isScrolled: boolean) => {
       if (isScrolled) {
-        bar.style.borderColor = "rgba(5,219,242,0.15)";
-        bar.style.background = "rgba(10,10,10,0.85)";
-        bar.style.boxShadow = "0 0 40px rgba(5,219,242,0.05)";
+        bar.style.borderColor = "rgba(5,219,242,0.24)";
+        bar.style.background = "rgba(7,10,12,0.94)";
+        bar.style.boxShadow = "0 12px 36px rgba(0,0,0,0.28), 0 0 28px rgba(5,219,242,0.06)";
       } else {
-        bar.style.borderColor = "rgba(255,255,255,0.1)";
-        bar.style.background = "rgba(255,255,255,0.04)";
-        bar.style.boxShadow = "none";
+        bar.style.borderColor = "rgba(5,219,242,0.2)";
+        bar.style.background = "rgba(7,10,12,0.82)";
+        bar.style.boxShadow = "0 10px 32px rgba(0,0,0,0.22)";
       }
     };
 
     const onScroll = () => {
       const shouldScroll = window.scrollY > 30;
-      if (shouldScroll === scrolled) return; // skip if threshold not crossed
+      if (shouldScroll === scrolled) return;
       scrolled = shouldScroll;
       applyStyle(shouldScroll);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    applyStyle(scrolled);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useGSAP(
     () => {
       gsap.from(headerRef.current, {
-        y: -80,
+        y: -28,
         opacity: 0,
-        duration: 0.9,
-        delay: 1.2,
+        duration: 0.7,
+        delay: 0.15,
         ease: "power4.out",
       });
     },
@@ -113,15 +115,15 @@ const PublicNavigation = ({ pathname }: { pathname: string }) => {
         ref={headerRef}
         className="fixed top-4 z-50 w-full pointer-events-none"
       >
-        <div className="mx-auto max-w-7xl px-4 w-full pointer-events-auto">
+        <div className="mx-auto w-full max-w-7xl px-4 pointer-events-auto">
           <div
             ref={navBarRef}
-            className="flex items-center justify-between rounded-2xl px-8 py-4 border transition-[background-color,border-color,box-shadow] duration-200"
+            className="flex items-center justify-between rounded-2xl border px-4 py-3 transition-[background-color,border-color,box-shadow] duration-200 sm:px-6 sm:py-4 lg:px-8"
             style={{
-              borderColor: "rgba(255,255,255,0.1)",
-              background: "rgba(255,255,255,0.04)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
+              borderColor: "rgba(5,219,242,0.2)",
+              background: "rgba(7,10,12,0.82)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
             }}
           >
             <Link href="/" className="flex-shrink-0">
@@ -130,16 +132,16 @@ const PublicNavigation = ({ pathname }: { pathname: string }) => {
                 alt="Creative Path Logo"
                 height={58}
                 priority
-                className="invert transition-opacity duration-300"
+                className="h-10 w-auto invert transition-opacity duration-300 sm:h-[46px] lg:h-[58px]"
               />
             </Link>
 
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm tracking-[0.25em] font-medium transition-colors duration-150 relative group ${
+                  className={`text-xs tracking-[0.18em] font-medium transition-colors duration-150 relative group xl:text-sm xl:tracking-[0.25em] ${
                     pathname === link.href
                       ? "text-[#05dbf2]"
                       : "text-[#9bb6c1] hover:text-[#e6f7fb]"
@@ -158,31 +160,37 @@ const PublicNavigation = ({ pathname }: { pathname: string }) => {
             </nav>
 
             <div className="flex items-center gap-3">
-              <div className="hidden md:flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-3">
                 {socialLinks.map((social) => (
                   <a key={social.href} href={social.href} target="_blank" rel="noopener noreferrer" className="text-[#9bb6c1] transition-colors duration-150 hover:text-[#05dbf2]">
                     {social.icon}
                   </a>
                 ))}
               </div>
-              <button
-                className="md:hidden text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-150 p-1"
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="lg:hidden text-[#9bb6c1] hover:text-[#05dbf2]"
                 onClick={() => setMenuOpen((v) => !v)}
-                aria-label="Toggle menu"
+                aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-navigation"
               >
                 {menuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       </header>
       <div
         ref={mobileMenuRef}
+        id="mobile-navigation"
         className="fixed inset-0 z-40 bg-[#0a0a0a] flex flex-col justify-center px-8"
         style={{
           transform: "translateX(100%)",
           opacity: 0,
-          pointerEvents: "none",
+          pointerEvents: menuOpen ? "auto" : "none",
         }}
       >
         <nav className="flex flex-col gap-6">
@@ -191,7 +199,7 @@ const PublicNavigation = ({ pathname }: { pathname: string }) => {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`mobile-link text-4xl font-bold uppercase tracking-tight transition-colors duration-300 ${
+              className={`mobile-link text-[clamp(1.7rem,7.5vw,3rem)] font-bold uppercase leading-tight tracking-tight transition-colors duration-300 ${
                 pathname === link.href
                   ? "text-gradient"
                   : "text-[#e6f7fb] hover:text-[#05dbf2]"
