@@ -53,6 +53,7 @@ const SplineScene = () => {
   const [status, setStatus] = useState<"pending" | "ok" | "unavailable">(
     "pending",
   );
+  const [hasLayoutSize, setHasLayoutSize] = useState(false);
   const appRef = useRef<Application | null>(null);
   const isVisibleRef = useRef(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -65,6 +66,24 @@ const SplineScene = () => {
       typeof WebGL2RenderingContext !== "undefined";
     setStatus(ok ? "ok" : "unavailable");
   }, []);
+
+  // Wait for the responsive viewport to have a real size before mounting the
+  // WebGPU canvas. Some browsers report a temporary 0×0 size during layout.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (status !== "ok" || !container) return;
+
+    const updateSizeState = () => {
+      const { width, height } = container.getBoundingClientRect();
+      const ready = width > 0 && height > 0;
+      setHasLayoutSize((current) => current === ready ? current : ready);
+    };
+
+    updateSizeState();
+    const observer = new ResizeObserver(updateSizeState);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [status]);
 
   // Pause Spline render loop when scrolled out of view → frees GPU for scroll
   useEffect(() => {
@@ -138,7 +157,7 @@ const SplineScene = () => {
 
   if (status === "unavailable") return <SplineFallback />;
   if (status === "pending")
-    return <div className="w-full h-full bg-[#0a0a0a]" aria-hidden="true" />;
+    return <div className="h-full min-h-px w-full min-w-px bg-[#0a0a0a]" aria-hidden="true" />;
 
   return (
     <div
@@ -147,14 +166,16 @@ const SplineScene = () => {
       onWheelCapture={(event) => event.stopPropagation()}
     >
       <SplineErrorBoundary>
-        <Spline
-          scene="https://prod.spline.design/ugrRUma4IHA2tD4s/scene.splinecode"
-          style={{ width: "100%", height: "100%" }}
-          onLoad={(app) => {
-            appRef.current = app;
-            if (!isVisibleRef.current) app.stop();
-          }}
-        />
+        {hasLayoutSize && (
+          <Spline
+            scene="https://prod.spline.design/ugrRUma4IHA2tD4s/scene.splinecode"
+            style={{ width: "100%", height: "100%" }}
+            onLoad={(app) => {
+              appRef.current = app;
+              if (!isVisibleRef.current) app.stop();
+            }}
+          />
+        )}
       </SplineErrorBoundary>
     </div>
   );
