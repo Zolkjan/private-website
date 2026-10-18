@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useMemo } from "react";
+import { usePublicData } from "@/lib/public-data-store";
 
 export interface ProfileSettings {
   displayName: string;
@@ -39,20 +38,6 @@ export const defaultProfile: ProfileSettings = {
 };
 
 export function useProfile() {
-  const [profile, setProfile] = useState(defaultProfile);
-
-  useEffect(() => {
-    if (!db) return;
-    return onSnapshot(
-      doc(db, "siteContent", "profile"),
-      (snapshot) => {
-        if (snapshot.exists()) {
-          setProfile({ ...defaultProfile, ...snapshot.data() } as ProfileSettings);
-        }
-      },
-      (error) => console.error("Nie udało się pobrać danych profilu:", error),
-    );
-  }, []);
-
-  return profile;
+  const { data } = usePublicData<Partial<ProfileSettings>>("profile");
+  return useMemo(() => ({ ...defaultProfile, ...data }), [data]);
 }

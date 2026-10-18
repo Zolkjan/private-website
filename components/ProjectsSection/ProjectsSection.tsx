@@ -1,24 +1,22 @@
 "use client";
 
 import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import Image from "next/image";
+import { PortfolioImage } from "@/components/PortfolioImage";
+import { useSectionReveal } from "@/lib/use-section-reveal";
+import { Button } from "@/components/ui/button";
 import { ArrowRight, ExternalLink, Github } from "lucide-react";
 import { useProjects } from "@/lib/firestore-hooks";
 import { getTechnology, useTechnologies, type Technology } from "@/lib/technologies";
 import { Card } from "@/components/ui/card";
-
-gsap.registerPlugin(ScrollTrigger);
-
+import { getProjectCategory, type ProjectCategoryId } from "@/lib/project-categories";
 export interface Project {
   id: string | number;
   title: string;
   subtitle: string;
   description: string;
   tags: string[];
+  category?: ProjectCategoryId;
   year: string;
   link?: string;
   github?: string;
@@ -41,6 +39,7 @@ export const allProjects: Project[] = [
     id: 1,
     title: "CreativePath",
     subtitle: "Portfolio Website",
+    category: "websites",
     description:
       "Moje osobiste portfolio — zbudowane z&nbsp;Next.js, GSAP i&nbsp;Spline 3D. Skupiam się na płynnych animacjach, niestandardowym kursorze i&nbsp;immersyjnym interfejsie.",
     tags: ["Next.js", "GSAP", "Spline", "TypeScript", "Tailwind"],
@@ -52,6 +51,7 @@ export const allProjects: Project[] = [
     id: 2,
     title: "NexaShop",
     subtitle: "E-commerce Platform",
+    category: "ecommerce",
     description:
       "Pełnoprawna platforma e-commerce z&nbsp;kartą produktów, koszykiem, płatnościami Stripe i&nbsp;panelem administracyjnym. Optymalizacja SEO i&nbsp;wydajności.",
     tags: ["Next.js", "TypeScript", "Stripe", "Prisma", "PostgreSQL"],
@@ -63,6 +63,7 @@ export const allProjects: Project[] = [
     id: 3,
     title: "MotionUI",
     subtitle: "Component Library",
+    category: "ui-motion",
     description:
       "Biblioteka komponentów React z&nbsp;wbudowanymi animacjami GSAP. Drag & drop, parallax, split-text, magnetic buttons — wszystko gotowe do użycia.",
     tags: ["React", "GSAP", "TypeScript", "Storybook"],
@@ -74,6 +75,7 @@ export const allProjects: Project[] = [
     id: 4,
     title: "DataPulse",
     subtitle: "Analytics Dashboard",
+    category: "web-apps",
     description:
       "Interaktywny dashboard analityczny z&nbsp;wykresami w&nbsp;czasie rzeczywistym, zaawansowanymi filtrami i&nbsp;responsywnym layoutem.",
     tags: ["React", "D3.js", "Node.js", "WebSockets"],
@@ -85,6 +87,7 @@ export const allProjects: Project[] = [
     id: 5,
     title: "ArtVision",
     subtitle: "Creative Agency",
+    category: "websites",
     description:
       "Strona agencji kreatywnej z&nbsp;intensywnym użyciem WebGL, animacji scroll-trigger i&nbsp;trójwymiarowych efektów tła.",
     tags: ["Next.js", "Three.js", "GSAP", "GLSL"],
@@ -96,6 +99,7 @@ export const allProjects: Project[] = [
     id: 6,
     title: "Tasker",
     subtitle: "Project Manager App",
+    category: "web-apps",
     description:
       "Aplikacja do zarządzania projektami z&nbsp;drag & drop, powiadomieniami w&nbsp;czasie rzeczywistym i&nbsp;integrację kalendarza.",
     tags: ["React", "TypeScript", "WebSockets", "Redux"],
@@ -109,254 +113,68 @@ const ProjectsSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const projects = useProjects(allProjects);
   const { technologies } = useTechnologies();
-  const featuredProjects = projects.filter((project) => project.featured);
-
-  useGSAP(
-    () => {
-      gsap.from(".projects-label", {
-        x: -30,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 75%",
-          once: true,
-        },
-      });
-
-      gsap.from(".projects-heading", {
-        y: 50,
-        opacity: 0,
-        duration: 0.9,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 72%",
-          once: true,
-        },
-      });
-
-      gsap.from(".project-card", {
-        y: 60,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".projects-grid",
-          start: "top 80%",
-          once: true,
-        },
-      });
-    },
-    { scope: containerRef },
-  );
+  const featured = projects.filter((project) => project.featured);
+  const featuredProjects = (featured.length ? featured : projects).slice(0, 3);
+  useSectionReveal(containerRef);
 
   return (
-    <section
-      ref={containerRef}
-      id="projekty"
-      className="section-padding relative bg-[#0a0a0a] overflow-hidden"
-    >
-      <span className="absolute top-12 right-8 text-[8rem] font-bold text-[#0f0f0f] leading-none select-none pointer-events-none">
-        03
-      </span>
-
-      <div className="glow-line mb-0" />
-
-      <div className="relative z-[1] max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16">
-          <div>
-            <div className="projects-label flex items-center gap-3 mb-6">
-              <span className="inline-block w-8 h-px bg-[#04b2d9]" />
-              <span className="text-xs tracking-[0.4em] text-[#04b2d9] uppercase">
-                Projekty
-              </span>
-            </div>
-            <h2 className="projects-heading text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[0.95] uppercase tracking-tight">
-              Wybrane <span className="text-gradient">prace</span>
-            </h2>
-          </div>
-
-          <Link
-            href="/projects"
-            className="group inline-flex items-center gap-3 text-sm tracking-[0.2em] uppercase text-[#04b2d9] hover:text-[#05dbf2] transition-colors duration-300 mt-6 lg:mt-0"
-          >
-            Wszystkie projekty
-            <ArrowRight
-              size={14}
-              className="transition-transform duration-300 group-hover:translate-x-1.5"
-            />
-          </Link>
+    <section ref={containerRef} id="projekty" className="section-padding">
+      <div className="site-container">
+        <div data-reveal className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+          <div><p className="section-eyebrow">Wybrane projekty</p><h2 className="section-heading">Pomysły zamienione w działanie.</h2></div>
+          <Button asChild variant="link" className="h-auto shrink-0 justify-start p-0 text-[#67dbe8]">
+            <Link href="/projects">Wszystkie projekty <ArrowRight /></Link>
+          </Button>
         </div>
-
-        {/* Featured projects — large cards */}
-        <div className="projects-grid grid lg:grid-cols-3 gap-6">
-          {featuredProjects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} technologies={technologies} />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {featuredProjects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} technologies={technologies} />
           ))}
         </div>
+        {featuredProjects.length === 0 && <p className="readable-copy">Nowe realizacje pojawią się tutaj wkrótce.</p>}
       </div>
     </section>
   );
 };
 
-const ProjectCard = ({
-  project,
-  index,
-  technologies,
-}: {
-  project: Project;
-  index: number;
-  technologies: Technology[];
-}) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const rotateXRef = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
-  const rotateYRef = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
-
-  const onEnter = () => {
-    if (cardRef.current && !rotateXRef.current) {
-      gsap.set(cardRef.current, { transformPerspective: 900 });
-      rotateXRef.current = gsap.quickTo(cardRef.current, "rotateX", {
-        duration: 0.25,
-        ease: "power2.out",
-      });
-      rotateYRef.current = gsap.quickTo(cardRef.current, "rotateY", {
-        duration: 0.25,
-        ease: "power2.out",
-      });
-    }
-    gsap.to(cardRef.current, {
-      y: -10,
-      borderColor: `${project.accent}40`,
-      duration: 0.4,
-      ease: "power2.out",
-    });
-    const glow = cardRef.current?.querySelector(".card-glow") ?? null;
-    if (glow) gsap.to(glow, { opacity: 1, duration: 0.4 });
-  };
-
-  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    rotateXRef.current?.(-y * 10);
-    rotateYRef.current?.(x * 10);
-  };
-
-  const onLeave = () => {
-    gsap.to(cardRef.current, {
-      y: 0,
-      rotateX: 0,
-      rotateY: 0,
-      borderColor: "rgba(26,26,26,1)",
-      duration: 0.5,
-      ease: "power3.out",
-    });
-    const glow = cardRef.current?.querySelector(".card-glow") ?? null;
-    if (glow) gsap.to(glow, { opacity: 0, duration: 0.4 });
-  };
-
+const ProjectCard = ({ project, index, technologies }: { project: Project; index: number; technologies: Technology[] }) => {
+  const image = project.images?.[0]?.url || project.imageUrl;
   return (
-    <Card
-      ref={cardRef}
-      className="project-card relative gap-0 rounded-2xl border-[#1d2a2e] bg-[#0d1315] py-0 shadow-[0_24px_64px_rgba(0,0,0,0.22)] overflow-hidden flex flex-col"
-      onMouseEnter={onEnter}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onLeave}
-    >
-      {/* Glow blob */}
-      <div
-        className="card-glow absolute -top-20 -right-20 w-52 h-52 rounded-full blur-3xl opacity-0 pointer-events-none"
-        style={{ backgroundColor: project.accent }}
-      />
-
-      {/* Header bar */}
-      <div
-        className="h-1 w-full"
-        style={{
-          background: `linear-gradient(to right, ${project.accent}, transparent)`,
-        }}
-      />
-
-      {(project.images?.[0]?.url || project.imageUrl) && (
-        <div className="group relative aspect-[16/10] w-full overflow-hidden border-b border-[#1a1a1a] bg-[#080c0e]">
-          <Image
-            src={project.images?.[0]?.url || project.imageUrl || ""}
-            alt={`Podgląd projektu ${project.title}`}
-            fill
-            unoptimized
-            sizes="(max-width: 1024px) 100vw, 33vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/35 to-transparent" />
+    <Card className="project-card group gap-0 overflow-hidden rounded-2xl border-white/10 bg-[#10171b] py-0 shadow-none transition-colors hover:border-white/25">
+      <Link href={`/projects/${project.id}`} tabIndex={-1} aria-hidden="true" className="relative block aspect-[4/3] overflow-hidden border-b border-white/10 bg-[#16232c]">
+        {image ? (
+          <PortfolioImage src={image} alt={`Podgląd projektu ${project.title}`} fill
+            sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 390px"
+            className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.025]" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${project.accent}20, #0b1218)` }}>
+            <div className="absolute h-[125%] w-[90%] rotate-[-30deg] rounded-[50%] border border-white/10" />
+            <div className="absolute size-40 rotate-45 rounded-3xl border" style={{ borderColor: `${project.accent}60` }} />
+            <span className="relative text-5xl font-semibold tracking-tighter text-white/85">{project.title.slice(0, 2)}</span>
+            <span className="absolute bottom-5 left-5 text-[10px] uppercase tracking-[0.2em] text-white/45">{project.subtitle}</span>
+          </div>
+        )}
+        <span className="absolute right-4 top-4 rounded-full bg-black/55 px-3 py-1.5 text-xs text-white">{project.year}</span>
+      </Link>
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-3 flex items-baseline justify-between gap-4">
+          <h3 className="text-xl font-semibold tracking-tight">
+            <Link href={`/projects/${project.id}`} className="transition-colors hover:text-[#67dbe8]">{project.title}</Link>
+          </h3>
+          <span className="text-xs tabular-nums text-[#70818c]">{String(index + 1).padStart(2, "0")}</span>
         </div>
-      )}
-
-      <div className="relative z-[1] p-8 flex flex-col flex-1">
-        {/* Index */}
-        <span className="text-xs tracking-[0.3em] text-[#9bb6c1] mb-6 block">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-
-        {/* Title */}
-        <h3 className="text-2xl font-bold text-[#e6f7fb] mb-1 leading-tight">
-          {project.title}
-        </h3>
-        <p
-          className="text-xs tracking-[0.2em] uppercase mb-5 font-medium"
-          style={{ color: project.accent }}
-        >
-          {project.subtitle}
-        </p>
-
-        <p
-          className="text-sm text-[#9bb6c1] leading-relaxed mb-8 flex-1"
-        >
-          {project.description.replaceAll("&nbsp;", "\u00a0")}
-        </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {project.tags.map((tag) => (
-            <TechnologyBadge key={tag} name={tag} technologies={technologies} />
-          ))}
+        <p className="mb-2 text-xs text-[#67dbe8]">{getProjectCategory(project).projectLabel}</p>
+        <p className="mb-5 line-clamp-2 text-sm leading-6 text-[#aebbc3]">{project.description.replaceAll("&nbsp;", " ")}</p>
+        <div className="mb-6 flex flex-wrap items-center gap-2" aria-label="Technologie projektu">
+          {project.tags.length > 0 && <span className="w-full text-[11px] text-[#82939e]">Technologie</span>}
+          {project.tags.slice(0, 3).map((tag) => <TechnologyBadge key={tag} name={tag} technologies={technologies} />)}
+          {project.tags.length > 3 && <span className="text-xs text-[#82939e]" aria-label={`Jeszcze ${project.tags.length - 3} technologie w szczegółach projektu`}>+{project.tags.length - 3}</span>}
         </div>
-
-        {/* Links */}
-        <div className="flex items-center justify-between pt-4 border-t border-[#1a1a1a]">
-          <span className="text-xs text-[#9bb6c1]">{project.year}</span>
-          <div className="flex gap-3">
-            {project.github && (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#9bb6c1] hover:text-[#e6f7fb] transition-colors"
-              >
-                <Github size={16} />
-              </a>
-            )}
-            {project.link && (
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors"
-              >
-                <ExternalLink size={16} />
-              </a>
-            )}
-            <Link
-              href={`/projects/${project.id}`}
-              aria-label={`Zobacz szczegóły projektu ${project.title}`}
-              title="Zobacz projekt"
-              className="text-[#9bb6c1] transition-colors hover:text-[#05dbf2]"
-            >
-              <ArrowRight size={16} />
-            </Link>
+        <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
+          <Link href={`/projects/${project.id}`} className="inline-flex min-h-8 items-center gap-2 text-sm text-white hover:text-[#67dbe8]" aria-label={`Zobacz projekt ${project.title}`}>Zobacz projekt <ArrowRight size={15} /></Link>
+          <div className="flex gap-1">
+            {project.github && <Button asChild size="icon" variant="ghost"><a href={project.github} target="_blank" rel="noopener noreferrer" aria-label={`Kod projektu ${project.title}`}><Github size={16} /></a></Button>}
+            {project.link && <Button asChild size="icon" variant="ghost"><a href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`Otwórz stronę ${project.title}`}><ExternalLink size={16} /></a></Button>}
           </div>
         </div>
       </div>
@@ -367,16 +185,8 @@ const ProjectCard = ({
 function TechnologyBadge({ name, technologies }: { name: string; technologies: Technology[] }) {
   const technology = getTechnology(name, technologies);
   return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-[10px] font-medium tracking-[0.1em] uppercase"
-      style={{
-        color: technology.color,
-        borderColor: `${technology.color}45`,
-        backgroundColor: `${technology.color}10`,
-      }}
-    >
-      <span className="size-1.5 rounded-full" style={{ backgroundColor: technology.color }} />
-      {name}
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-[#aebbc3]">
+      <span className="size-1 rounded-full" style={{ backgroundColor: technology.color }} />{name}
     </span>
   );
 }

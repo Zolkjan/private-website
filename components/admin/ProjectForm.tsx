@@ -18,10 +18,12 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import TechnologyPicker from "@/components/admin/TechnologyPicker";
 import type { Project, ProjectImage } from "@/components/ProjectsSection/ProjectsSection";
 import { db, storage } from "@/lib/firebase";
+import { getProjectCategory, isProjectCategoryId, projectCategories } from "@/lib/project-categories";
 
 type ProjectFields = Omit<Project, "id">;
 
@@ -68,6 +70,7 @@ export default function ProjectForm({ projectId }: { projectId?: string }) {
           return;
         }
         const project = { ...newProject, ...snapshot.data() } as ProjectFields;
+        project.category = getProjectCategory(project).id;
         if (!project.images?.length && project.imageUrl) {
           project.images = [{ url: project.imageUrl, path: project.imagePath }];
         }
@@ -122,6 +125,10 @@ export default function ProjectForm({ projectId }: { projectId?: string }) {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!isProjectCategoryId(draft.category)) {
+      setError("Wybierz rodzaj realizacji, aby projekt trafił do odpowiedniego filtra.");
+      return;
+    }
     if (!db) {
       setError("Firebase nie jest skonfigurowany.");
       return;
@@ -214,6 +221,25 @@ export default function ProjectForm({ projectId }: { projectId?: string }) {
             <div className="grid gap-5 sm:grid-cols-2">
               <FormInput label="Nazwa projektu *" value={draft.title} onChange={(value) => setField("title", value)} required />
               <FormInput label="Podtytuł *" value={draft.subtitle} onChange={(value) => setField("subtitle", value)} required />
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="project-category">Rodzaj realizacji *</Label>
+                <NativeSelect
+                  id="project-category"
+                  required
+                  value={draft.category ?? ""}
+                  onChange={(event) => {
+                    if (isProjectCategoryId(event.target.value)) setField("category", event.target.value);
+                  }}
+                  aria-describedby="project-category-help"
+                  className="border-[#2a3b40] bg-[#090e10] focus-visible:border-[#04b2d9] focus-visible:ring-[#04b2d9]/30"
+                >
+                  <option value="" disabled>Wybierz rodzaj realizacji</option>
+                  {projectCategories.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+                </NativeSelect>
+                <p id="project-category-help" className="text-xs leading-5 text-[#789099]">
+                  Określa filtr w portfolio. Wybierz to, co powstało w projekcie; użyte technologie dodasz osobno poniżej.
+                </p>
+              </div>
               <FormInput label="Rok *" value={draft.year} onChange={(value) => setField("year", value)} required />
               <FormInput label="Kolor akcentu" type="color" value={draft.accent} onChange={(value) => setField("accent", value)} />
               <FormInput label="Link do projektu" type="url" value={draft.link ?? ""} onChange={(value) => setField("link", value)} />

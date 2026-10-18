@@ -3,40 +3,37 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
-const ScrollProgress = () => {
+export default function ScrollProgress() {
   const barRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-
   useEffect(() => {
     const bar = barRef.current;
     if (!bar) return;
-
-    const onScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } =
-        document.documentElement;
-      const total = scrollHeight - clientHeight;
-      const pct = total > 0 ? (scrollTop / total) * 100 : 0;
-      bar.style.width = `${pct}%`;
-      bar.style.boxShadow = pct > 1 ? "0 0 10px rgba(5,219,242,0.6)" : "none";
+    let frame = 0;
+    let total = 0;
+    const draw = () => {
+      frame = 0;
+      const progress = total > 0 ? Math.min(1, Math.max(0, window.scrollY / total)) : 0;
+      bar.style.transform = `scaleX(${progress})`;
     };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(draw); };
+    const measure = () => {
+      total = document.documentElement.scrollHeight - window.innerHeight;
+      schedule();
+    };
+    const resize = new ResizeObserver(measure);
+    resize.observe(document.body);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", measure);
+    measure();
+    return () => {
+      cancelAnimationFrame(frame);
+      resize.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", measure);
+    };
+  }, [pathname]);
 
   if (pathname.startsWith("/admin")) return null;
-
-  return (
-    <div
-      ref={barRef}
-      aria-hidden="true"
-      className="fixed top-0 left-0 z-[200] h-[2px] pointer-events-none"
-      style={{
-        width: "0%",
-        background: "linear-gradient(to right, #04b2d9, #05dbf2)",
-      }}
-    />
-  );
-};
-
-export default ScrollProgress;
+  return <div ref={barRef} aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[80] h-0.5 origin-left bg-[#67dbe8]" style={{ transform: "scaleX(0)" }} />;
+}

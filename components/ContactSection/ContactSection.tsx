@@ -1,156 +1,52 @@
 "use client";
 
 import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { ArrowRight, Mail, Github, Linkedin, Instagram } from "lucide-react";
+import { ArrowUpRight, Mail, Github, Linkedin, Instagram } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { defaultSiteContent, useSiteContent } from "@/lib/firestore-hooks";
 import { useProfile } from "@/lib/profile";
+import { useSectionReveal } from "@/lib/use-section-reveal";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const ContactSection = () => {
-  const containerRef = useRef<HTMLElement>(null);
+export default function ContactSection() {
+  const sectionRef = useRef<HTMLElement>(null);
   const content = useSiteContent(defaultSiteContent);
   const profile = useProfile();
+  useSectionReveal(sectionRef);
   const socials = [
-    { label: "GitHub", href: profile.github, icon: <Github size={18} /> },
-    { label: "LinkedIn", href: profile.linkedin, icon: <Linkedin size={18} /> },
-    { label: "Instagram", href: profile.instagram, icon: <Instagram size={18} /> },
+    { name: "GitHub", href: profile.github, icon: Github },
+    { name: "LinkedIn", href: profile.linkedin, icon: Linkedin },
+    { name: "Instagram", href: profile.instagram, icon: Instagram },
   ].filter((social) => social.href);
 
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 70%",
-          once: true,
-        },
-      });
-
-      tl.from(".contact-label", {
-        x: -30,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-      })
-        .from(
-          ".contact-heading",
-          { y: 60, opacity: 0, duration: 1, ease: "power4.out" },
-          "-=0.4",
-        )
-        .from(
-          ".contact-sub",
-          { y: 20, opacity: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.5",
-        )
-        .from(
-          ".contact-cta",
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.6,
-            stagger: 0.12,
-            ease: "power3.out",
-          },
-          "-=0.4",
-        )
-        .from(
-          ".contact-social",
-          {
-            scale: 0.7,
-            opacity: 0,
-            duration: 0.4,
-            stagger: 0.08,
-            ease: "back.out(1.5)",
-          },
-          "-=0.3",
-        );
-    },
-    { scope: containerRef },
-  );
-
   return (
-    <section
-      ref={containerRef}
-      id="kontakt"
-      className="section-padding relative bg-[#050505] overflow-hidden"
-    >
-      <div className="glow-line" />
-
-      {/* Background accent glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-[#04b2d9] opacity-[0.04] blur-[120px] pointer-events-none" />
-
-      <div className="relative z-[1] max-w-7xl mx-auto px-6 lg:px-12 text-center">
-        <div className="contact-label flex items-center justify-center gap-3 mb-8">
-          <span className="inline-block w-8 h-px bg-[#04b2d9]" />
-          <span className="text-xs tracking-[0.4em] text-[#04b2d9] uppercase">
-            Kontakt
-          </span>
-          <span className="inline-block w-8 h-px bg-[#04b2d9]" />
+    <section ref={sectionRef} id="kontakt" className="border-t border-white/10 bg-[#0e1417]">
+      <div className="site-container py-16 md:py-24">
+        <div data-reveal className="grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-end md:gap-16">
+          <div><p className="section-eyebrow">Zróbmy coś dobrego</p><h2 className="section-heading">Twój pomysł.<br /><span className="text-[#67dbe8]">Nasz kolejny projekt.</span></h2></div>
+          <div>
+            <p className="readable-copy mb-6 max-w-md">{content.contactDescription}</p>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg" className="h-12 rounded-full bg-[#67dbe8] px-6 text-[#071014] hover:bg-[#a0edf4]">
+                <Link href="/contact">Porozmawiajmy <ArrowUpRight /></Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-12 max-w-full rounded-full border-white/20 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white">
+                <a href={`mailto:${profile.email}`}><Mail /><span className="truncate">{profile.email}</span></a>
+              </Button>
+            </div>
+          </div>
         </div>
-
-        <h2 className="contact-heading text-[clamp(3rem,9vw,8rem)] font-bold leading-[0.9] uppercase tracking-tight mb-8">
-          Porozmawiajmy
-          <br />
-          <span className="text-gradient">o projekcie</span>
-        </h2>
-
-        <p className="contact-sub text-[#9bb6c1] text-lg max-w-md mx-auto leading-relaxed mb-12">
-          {content.contactDescription}
-        </p>
-
-        {/* Email */}
-        <a
-          href={`mailto:${profile.email}`}
-          className="contact-cta group inline-flex items-center gap-3 px-10 py-5 bg-[#04b2d9] text-[#0a0a0a] font-bold text-sm tracking-[0.25em] uppercase rounded-full hover:bg-[#05dbf2] transition-colors duration-300 glow-md mb-6"
-        >
-          <Mail size={16} />
-          {profile.email}
-        </a>
-
-        <div className="contact-cta block mb-12">
-          <Link
-            href="/contact"
-            className="group inline-flex items-center gap-3 text-sm tracking-[0.2em] uppercase text-[#04b2d9] hover:text-[#05dbf2] transition-colors duration-300"
-          >
-            Wypełnij formularz kontaktowy
-            <ArrowRight
-              size={14}
-              className="transition-transform duration-300 group-hover:translate-x-1.5"
-            />
-          </Link>
-        </div>
-
-        {/* Divider */}
-        <div className="glow-line max-w-xs mx-auto mb-10" />
-
-        {/* Socials */}
-        <div className="flex items-center justify-center gap-4">
-          {socials.map((social) => (
-            <a
-              key={social.label}
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-social group flex items-center gap-2 px-5 py-3 border border-[#1a1a1a] rounded-full text-[#9bb6c1] text-sm hover:border-[rgba(5,219,242,0.3)] hover:text-[#05dbf2] transition-all duration-300"
-            >
-              {social.icon}
-              <span className="text-xs tracking-[0.1em]">{social.label}</span>
-            </a>
-          ))}
-        </div>
+        <footer className="mt-14 flex flex-wrap items-center justify-between gap-5 border-t border-white/10 pt-6 text-xs text-[#9ba9b0]">
+          <p>© {new Date().getFullYear()} {profile.displayName} · CreativePath</p>
+          <div className="flex items-center gap-2">
+            {socials.map(({ name, href, icon: Icon }) => (
+              <Button key={name} asChild variant="ghost" size="icon" className="rounded-full text-[#aebbc3] hover:bg-white/10 hover:text-white">
+                <a href={href} target="_blank" rel="noopener noreferrer" aria-label={name}><Icon size={18} /></a>
+              </Button>
+            ))}
+          </div>
+        </footer>
       </div>
-
-      {/* Footer note */}
-      <p className="text-center text-xs text-[#9bb6c1]/40 mt-20 tracking-widest uppercase">
-        © {new Date().getFullYear()} {profile.displayName} — CreativePath
-      </p>
     </section>
   );
-};
-
-export default ContactSection;
+}

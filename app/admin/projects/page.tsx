@@ -12,6 +12,7 @@ import { allProjects, type Project } from "@/components/ProjectsSection/Projects
 import { useAdminAuth } from "@/components/admin/AdminShell";
 import { useProjects } from "@/lib/firestore-hooks";
 import { db, storage } from "@/lib/firebase";
+import { getProjectCategory } from "@/lib/project-categories";
 
 export default function AdminProjectsPage() {
   const projects = useProjects(allProjects);
@@ -109,6 +110,7 @@ export default function AdminProjectsPage() {
                     <span className="size-2 shrink-0" style={{ backgroundColor: project.accent }} />
                     <span className="min-w-0">
                       <span className="block truncate font-medium text-[#e6f7fb] transition-colors group-hover:text-[#05dbf2]">{project.title}</span>
+                      <span className="mt-1 block text-xs text-[#67dbe8]">{getProjectCategory(project).label}</span>
                       <span className="mt-1 block truncate text-xs text-[#789099]">{project.subtitle} · {project.year} · {project.tags.join(", ")}</span>
                     </span>
                     {project.featured && <span className="hidden border border-[#04b2d9]/25 px-2 py-1 text-[10px] uppercase tracking-wider text-[#65dbea] sm:inline">Wyróżniony</span>}

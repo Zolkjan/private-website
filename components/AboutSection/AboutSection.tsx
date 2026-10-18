@@ -1,199 +1,49 @@
 "use client";
 
 import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { defaultSiteContent, useSiteContent } from "@/lib/firestore-hooks";
 import { useProfile } from "@/lib/profile";
+import { useSectionReveal } from "@/lib/use-section-reveal";
+import workspace from "@/public/images/development-workspace.webp";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const AboutSection = () => {
-  const containerRef = useRef<HTMLElement>(null);
+export default function AboutSection() {
+  const sectionRef = useRef<HTMLElement>(null);
   const content = useSiteContent(defaultSiteContent);
   const profile = useProfile();
-  const initials = profile.displayName.split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toLocaleUpperCase("pl");
-
-  useGSAP(
-    () => {
-      // Left column
-      gsap.from(".about-label", {
-        x: -30,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 75%",
-          once: true,
-        },
-      });
-
-      gsap.from(".about-heading", {
-        y: 50,
-        opacity: 0,
-        duration: 0.9,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 72%",
-          once: true,
-        },
-      });
-
-      gsap.from(".about-text", {
-        y: 25,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.12,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 65%",
-          once: true,
-        },
-      });
-
-      gsap.from(".about-skill-tag", {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.4,
-        stagger: 0.06,
-        ease: "back.out(1.5)",
-        scrollTrigger: {
-          trigger: ".about-skills-grid",
-          start: "top 80%",
-          once: true,
-        },
-      });
-
-      // Image / right panel reveal
-      gsap.from(".about-image-panel", {
-        x: 60,
-        opacity: 0,
-        duration: 1,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 68%",
-          once: true,
-        },
-      });
-    },
-    { scope: containerRef },
-  );
+  useSectionReveal(sectionRef);
 
   return (
-    <section
-      ref={containerRef}
-      id="o-mnie"
-      className="section-padding relative bg-[#0a0a0a] overflow-hidden"
-    >
-      {/* Section number */}
-      <span className="absolute top-12 right-8 text-[8rem] font-bold text-[#111] leading-none select-none pointer-events-none z-0">
-        01
-      </span>
-
-      <div className="relative z-[1] max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-          {/* Left column */}
-          <div>
-            <div className="about-label flex items-center gap-3 mb-6">
-              <span className="inline-block w-8 h-px bg-[#04b2d9]" />
-              <span className="text-xs tracking-[0.4em] text-[#04b2d9] uppercase">
-                O Mnie
-              </span>
-            </div>
-
-            <h2 className="about-heading text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[0.95] uppercase tracking-tight mb-8">
-              Tworzę z <span className="text-gradient">pasją</span>
-              <br />i precyzją
-            </h2>
-
-            <p className="about-text text-[#9bb6c1] leading-relaxed mb-5 max-w-md">
-              {content.aboutFirstParagraph}
-            </p>
-
-            <p className="about-text text-[#9bb6c1] leading-relaxed mb-10 max-w-md">
-              {content.aboutSecondParagraph}
-            </p>
-
-            {/* Skills tags */}
-            <div className="about-skills-grid flex flex-wrap gap-2 mb-10">
-              {profile.skills.map((s) => (
-                <span
-                  key={s}
-                  className="about-skill-tag px-4 py-2 border border-[rgba(5,219,242,0.2)] text-[#9bb6c1] text-xs tracking-[0.15em] uppercase rounded-full hover:border-[#04b2d9] hover:text-[#05dbf2] transition-colors duration-300"
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
-
-            <Link
-              href="/about-me"
-              className="about-text group inline-flex items-center gap-3 text-sm tracking-[0.2em] uppercase text-[#04b2d9] hover:text-[#05dbf2] transition-colors duration-300"
-            >
-              Więcej o mnie
-              <ArrowRight
-                size={14}
-                className="transition-transform duration-300 group-hover:translate-x-1.5"
-              />
-            </Link>
+    <section ref={sectionRef} id="o-mnie" className="section-padding border-t border-white/10">
+      <div className="site-container grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
+        <figure data-reveal className="overflow-hidden rounded-2xl">
+          <div className="relative aspect-[6/5] overflow-hidden bg-[#161b1e]">
+            <Image src={workspace} alt="Laptop z otwartym kodem na drewnianym biurku" fill
+              placeholder="blur" sizes="(max-width: 1023px) 100vw, 560px" className="object-cover" />
           </div>
-
-          {/* Right column – decorative card */}
-          <div className="about-image-panel relative">
-            <div className="relative glass-card rounded-2xl p-8 overflow-hidden">
-              {/* Glow blob */}
-              <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-[#04b2d9] opacity-10 blur-3xl pointer-events-none" />
-
-              <div className="grid grid-cols-2 gap-6">
-                {[
-                  { icon: "⚡", label: "Animacje", val: "GSAP / Motion" },
-                  { icon: "🎨", label: "Design", val: "Figma / Framer" },
-                  { icon: "⚙️", label: "Framework", val: "Next.js" },
-                  { icon: "🌐", label: "3D & WebGL", val: "Three.js / Spline" },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="p-5 rounded-xl bg-[#111] border border-[#1a1a1a] hover:border-[rgba(5,219,242,0.2)] transition-colors duration-300"
-                  >
-                    <div className="text-2xl mb-3">{item.icon}</div>
-                    <p className="text-[10px] tracking-[0.2em] text-[#9bb6c1] uppercase mb-1">
-                      {item.label}
-                    </p>
-                    <p className="text-sm font-medium text-[#e6f7fb]">
-                      {item.val}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-[#1a1a1a] flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#04b2d9] to-[#0a8cbf] flex items-center justify-center text-[#0a0a0a] font-bold text-sm">
-                  {initials}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#e6f7fb]">
-                    {profile.displayName}
-                  </p>
-                  <p className="text-xs text-[#9bb6c1]">{profile.role}</p>
-                </div>
-                <div className="ml-auto flex items-center gap-1.5">
-                  {profile.availability && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />}
-                  <span className="text-xs text-[#9bb6c1]">{profile.availability}</span>
-                </div>
-              </div>
-            </div>
+          <figcaption className="flex justify-between gap-4 border-t border-white/10 py-4 text-xs text-[#9ba9b0]">
+            <span>Pomysł. Projekt. Kod.</span><span>CreativePath</span>
+          </figcaption>
+        </figure>
+        <div data-reveal>
+          <p className="section-eyebrow">O mnie</p>
+          <h2 className="section-heading mb-6">Design z pomysłem.<br /><span className="text-[#8d9da6]">Kod z dbałością o detal.</span></h2>
+          <p className="mb-5 text-lg font-medium text-white">{profile.displayName}</p>
+          <p className="readable-copy max-w-lg">{content.aboutFirstParagraph}</p>
+          <Button asChild variant="outline" className="mt-8 h-11 rounded-full border-white/20 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white">
+            <Link href="/about-me">Poznaj mnie bliżej <ArrowUpRight /></Link>
+          </Button>
+          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/10 pt-6">
+            {profile.location && <span className="text-sm text-[#aebbc3]">{profile.location} · Praca zdalna</span>}
+            {profile.availability && <span className="inline-flex items-center gap-2 text-sm text-[#aebbc3]">
+              <span className="size-1.5 shrink-0 rounded-full bg-emerald-400" />{profile.availability}
+            </span>}
           </div>
         </div>
       </div>
     </section>
   );
-};
-
-export default AboutSection;
+}

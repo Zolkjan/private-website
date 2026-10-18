@@ -10,9 +10,9 @@ const MainPage = () => {
   return (
     <main className="flex flex-col w-full">
       <HeroSection />
+      <ProjectsSection />
       <AboutSection />
       <SkillsSection />
-      <ProjectsSection />
       <ContactSection />
     </main>
   );

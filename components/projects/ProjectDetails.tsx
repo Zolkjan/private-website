@@ -4,14 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { doc, onSnapshot } from "firebase/firestore";
-import Image from "next/image";
+import { PortfolioImage } from "@/components/PortfolioImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { allProjects, type Project, type ProjectImage } from "@/components/ProjectsSection/ProjectsSection";
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firebase-public";
 import { getTechnology, useTechnologies } from "@/lib/technologies";
+import { getProjectCategory } from "@/lib/project-categories";
 
 export default function ProjectDetails({ projectId }: { projectId: string }) {
   const router = useRouter();
@@ -120,14 +121,13 @@ export default function ProjectDetails({ projectId }: { projectId: string }) {
         <section className="detail-gallery" aria-label="Galeria projektu">
           <div className="relative aspect-[16/10] overflow-hidden border border-[#1b292d] bg-[#0d1315] sm:aspect-[2/1]">
             {activeImage ? (
-              <Image
+              <PortfolioImage
                 ref={imageRef}
                 key={activeImage.url}
                 src={activeImage.url}
                 alt={`${project.title} — zdjęcie ${activeIndex + 1} z ${images.length}`}
                 fill
                 priority
-                unoptimized
                 sizes="(max-width: 1280px) 100vw, 1200px"
                 className="object-contain"
               />
@@ -160,7 +160,7 @@ export default function ProjectDetails({ projectId }: { projectId: string }) {
                   onClick={() => setActiveIndex(index)}
                   className={`group relative h-auto w-full aspect-[16/10] overflow-hidden rounded-none border p-0 transition-colors hover:bg-transparent ${index === activeIndex ? "border-[#05dbf2]" : "border-[#1b292d] opacity-65 hover:border-[#527078] hover:opacity-100"}`}
                 >
-                  <Image src={image.url} alt="" fill unoptimized sizes="(max-width: 640px) 33vw, 180px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <PortfolioImage src={image.url} alt="" fill sizes="(max-width: 640px) 33vw, 180px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                   <span className="absolute bottom-1.5 left-2 text-[10px] tabular-nums text-white drop-shadow">{String(index + 1).padStart(2, "0")}</span>
                 </Button>
               ))}
@@ -191,6 +191,10 @@ export default function ProjectDetails({ projectId }: { projectId: string }) {
           </div>
 
           <aside>
+            <div className="mb-8 border-b border-[#1d2a2e] pb-5">
+              <p className="mb-2 text-[10px] uppercase tracking-[0.24em] text-[#04b2d9]">Rodzaj realizacji</p>
+              <p className="text-base font-medium">{getProjectCategory(project).projectLabel}</p>
+            </div>
             <p className="mb-4 text-[10px] uppercase tracking-[0.24em] text-[#04b2d9]">Technologie</p>
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => {

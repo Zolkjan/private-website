@@ -1,231 +1,65 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { Github, Instagram, Linkedin, Menu, X } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
+import { Dialog } from "radix-ui";
 import { Button } from "@/components/ui/button";
 import FullCreativePathLogo from "@/public/FullCreativePathLogo.svg";
-import { useProfile } from "@/lib/profile";
 
 const navLinks = [
-  { href: "/", label: "STRONA GŁÓWNA" },
-  { href: "/about-me", label: "O MNIE" },
-  { href: "/projects", label: "PROJEKTY" },
-  { href: "/contact", label: "KONTAKT" },
+  { href: "/", label: "Strona główna" },
+  { href: "/about-me", label: "O mnie" },
+  { href: "/projects", label: "Projekty" },
+  { href: "/contact", label: "Kontakt" },
 ];
 
-const MainNavigation = () => {
+export default function MainNavigation() {
   const pathname = usePathname();
-
   if (pathname.startsWith("/admin")) return null;
-  return <PublicNavigation pathname={pathname} />;
-};
+  return <PublicNavigation key={pathname} pathname={pathname} />;
+}
 
-const PublicNavigation = ({ pathname }: { pathname: string }) => {
-  const headerRef = useRef<HTMLElement>(null);
-  const navBarRef = useRef<HTMLDivElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const profile = useProfile();
-  const socialLinks = [
-    { href: profile.github, icon: <Github size={20} /> },
-    { href: profile.linkedin, icon: <Linkedin size={20} /> },
-    { href: profile.instagram, icon: <Instagram size={20} /> },
-  ].filter((social) => social.href);
-
-  // Direct DOM style mutation — no React re-renders on every scroll event
-  useEffect(() => {
-    const bar = navBarRef.current;
-    if (!bar) return;
-
-    let scrolled = window.scrollY > 30;
-
-    const applyStyle = (isScrolled: boolean) => {
-      if (isScrolled) {
-        bar.style.borderColor = "rgba(5,219,242,0.24)";
-        bar.style.background = "rgba(7,10,12,0.94)";
-        bar.style.boxShadow = "0 12px 36px rgba(0,0,0,0.28), 0 0 28px rgba(5,219,242,0.06)";
-      } else {
-        bar.style.borderColor = "rgba(5,219,242,0.2)";
-        bar.style.background = "rgba(7,10,12,0.82)";
-        bar.style.boxShadow = "0 10px 32px rgba(0,0,0,0.22)";
-      }
-    };
-
-    const onScroll = () => {
-      const shouldScroll = window.scrollY > 30;
-      if (shouldScroll === scrolled) return;
-      scrolled = shouldScroll;
-      applyStyle(shouldScroll);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    applyStyle(scrolled);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useGSAP(
-    () => {
-      gsap.from(headerRef.current, {
-        y: -28,
-        opacity: 0,
-        duration: 0.7,
-        delay: 0.15,
-        ease: "power4.out",
-      });
-    },
-    { scope: headerRef },
-  );
-
-  useEffect(() => {
-    const menu = mobileMenuRef.current;
-    if (!menu) return;
-    if (menuOpen) {
-      gsap.to(menu, {
-        x: 0,
-        opacity: 1,
-        duration: 0.4,
-        ease: "power3.out",
-      });
-      gsap.from(menu.querySelectorAll(".mobile-link"), {
-        x: 40,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 0.4,
-        ease: "power3.out",
-        delay: 0.1,
-      });
-    } else {
-      gsap.to(menu, {
-        x: "100%",
-        opacity: 0,
-        duration: 0.35,
-        ease: "power3.in",
-      });
-    }
-  }, [menuOpen]);
-
+function PublicNavigation({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false);
   return (
-    <>
-      <header
-        ref={headerRef}
-        className="fixed top-4 z-50 w-full pointer-events-none"
-      >
-        <div className="mx-auto w-full max-w-7xl px-4 pointer-events-auto">
-          <div
-            ref={navBarRef}
-            className="flex items-center justify-between rounded-2xl border px-4 py-3 transition-[background-color,border-color,box-shadow] duration-200 sm:px-6 sm:py-4 lg:px-8"
-            style={{
-              borderColor: "rgba(5,219,242,0.2)",
-              background: "rgba(7,10,12,0.82)",
-              backdropFilter: "blur(18px)",
-              WebkitBackdropFilter: "blur(18px)",
-            }}
-          >
-            <Link href="/" className="flex-shrink-0">
-              <Image
-                src={FullCreativePathLogo}
-                alt="Creative Path Logo"
-                height={58}
-                priority
-                className="h-10 w-auto invert transition-opacity duration-300 sm:h-[46px] lg:h-[58px]"
-              />
-            </Link>
-
-            <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`text-xs tracking-[0.18em] font-medium transition-colors duration-150 relative group xl:text-sm xl:tracking-[0.25em] ${
-                    pathname === link.href
-                      ? "text-[#05dbf2]"
-                      : "text-[#9bb6c1] hover:text-[#e6f7fb]"
-                  }`}
-                >
-                  {link.label}
-                  <span
-                    className={`absolute -bottom-1 left-0 h-px bg-[#04b2d9] transition-[width] duration-150 ${
-                      pathname === link.href
-                        ? "w-full"
-                        : "w-0 group-hover:w-full"
-                    }`}
-                  />
-                </Link>
-              ))}
-            </nav>
-
-            <div className="flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-3">
-                {socialLinks.map((social) => (
-                  <a key={social.href} href={social.href} target="_blank" rel="noopener noreferrer" className="text-[#9bb6c1] transition-colors duration-150 hover:text-[#05dbf2]">
-                    {social.icon}
-                  </a>
-                ))}
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="lg:hidden text-[#9bb6c1] hover:text-[#05dbf2]"
-                onClick={() => setMenuOpen((v) => !v)}
-                aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
-                aria-expanded={menuOpen}
-                aria-controls="mobile-navigation"
-              >
-                {menuOpen ? <X size={20} /> : <Menu size={20} />}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-      <div
-        ref={mobileMenuRef}
-        id="mobile-navigation"
-        className="fixed inset-0 z-40 bg-[#0a0a0a] flex flex-col justify-center px-8"
-        style={{
-          transform: "translateX(100%)",
-          opacity: 0,
-          pointerEvents: menuOpen ? "auto" : "none",
-        }}
-      >
-        <nav className="flex flex-col gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className={`mobile-link text-[clamp(1.7rem,7.5vw,3rem)] font-bold uppercase leading-tight tracking-tight transition-colors duration-300 ${
-                pathname === link.href
-                  ? "text-gradient"
-                  : "text-[#e6f7fb] hover:text-[#05dbf2]"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex gap-5 mt-16">
-          {socialLinks.map((social) => (
-            <a
-              key={social.href}
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#9bb6c1] hover:text-[#05dbf2] transition-colors duration-300"
-            >
-              {social.icon}
-            </a>
-          ))}
+    <header className="pointer-events-none fixed inset-x-0 top-3 z-50 sm:top-4">
+      <div className="site-container">
+        <div className="pointer-events-auto flex items-center justify-between gap-5 rounded-2xl border border-white/15 bg-[#0d1418]/95 px-4 py-3 shadow-lg sm:px-6">
+          <Link href="/" aria-label="CreativePath — strona główna" className="shrink-0">
+            <Image src={FullCreativePathLogo} alt="CreativePath" height={40} priority className="h-9 w-auto invert sm:h-10" />
+          </Link>
+          <nav aria-label="Nawigacja główna" className="hidden items-center gap-7 lg:flex">
+            {navLinks.map((link) => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined}
+              className={`text-sm transition-colors hover:text-white ${pathname === link.href ? "text-[#67dbe8]" : "text-[#aebbc3]"}`}>{link.label}</Link>)}
+          </nav>
+          <Button asChild variant="outline" className="hidden rounded-full border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white lg:inline-flex">
+            <Link href="/contact">Zacznijmy projekt <ArrowUpRight /></Link>
+          </Button>
+          <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Trigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Otwórz menu" className="text-white hover:bg-white/10 hover:text-white lg:hidden"><Menu /></Button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/70" />
+              <Dialog.Content className="fixed inset-x-4 top-4 z-[70] rounded-2xl border border-white/15 bg-[#0d1418] p-6 text-white" aria-describedby={undefined}>
+                <div className="mb-8 flex items-center justify-between">
+                  <Dialog.Title className="text-sm font-semibold">CreativePath</Dialog.Title>
+                  <Dialog.Close asChild><Button variant="ghost" size="icon" aria-label="Zamknij menu" className="hover:bg-white/10 hover:text-white"><X /></Button></Dialog.Close>
+                </div>
+                <nav aria-label="Menu mobilne" className="flex flex-col gap-2">
+                  {navLinks.map((link) => <Dialog.Close asChild key={link.href}>
+                    <Link href={link.href} aria-current={pathname === link.href ? "page" : undefined}
+                      className={`rounded-lg px-3 py-4 text-xl tracking-tight hover:bg-white/5 ${pathname === link.href ? "text-[#67dbe8]" : "text-white"}`}>{link.label}</Link>
+                  </Dialog.Close>)}
+                </nav>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </div>
       </div>
-    </>
+    </header>
   );
-};
-
-export default MainNavigation;
+}

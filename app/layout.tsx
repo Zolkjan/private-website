@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { Montserrat_Alternates } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import MainNavigation from "@/components/MainNavigation";
 import ScrollProgress from "@/components/ScrollProgress";
 
-const montserratAlternates = Montserrat_Alternates({
-  subsets: ["latin"],
-  variable: "--font-montserrat-alternates",
-  weight: ["400", "600", "700", "800"],
+const manrope = Manrope({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-manrope",
   display: "swap",
 });
 
@@ -25,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="pl" className="scroll-smooth" data-scroll-behavior="smooth">
       <body
-        className={`${montserratAlternates.variable} font-[family-name:var(--font-montserrat-alternates)] antialiased bg-[#0a0a0a] text-[#e6f7fb] overflow-x-hidden`}
+        className={`${manrope.variable} font-[family-name:var(--font-manrope)] antialiased bg-[#0a0a0a] text-[#e6f7fb] overflow-x-hidden`}
       >
         <ScrollProgress />
         <MainNavigation />

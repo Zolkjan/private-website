@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { usePublicData } from "@/lib/public-data-store";
 
 export interface Technology {
   id?: string;
@@ -51,38 +49,6 @@ export function getTechnology(
 }
 
 export function useTechnologies() {
-  const [technologies, setTechnologies] = useState(technologyDictionary);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!db) {
-      setError("Firebase nie jest skonfigurowany.");
-      return;
-    }
-    return onSnapshot(
-      collection(db, "technologies"),
-      (snapshot) => {
-        setError("");
-        if (snapshot.empty) {
-          setTechnologies(technologyDictionary);
-          return;
-        }
-        setTechnologies(
-          snapshot.docs.map((technology) => ({
-            ...technology.data(),
-            id: technology.id,
-          })) as Technology[],
-        );
-      },
-      (snapshotError) => {
-        setError(
-          snapshotError.code === "permission-denied"
-            ? "Brak dostępu do kolekcji technologies. Opublikuj zaktualizowane firestore.rules."
-            : "Nie udało się połączyć z katalogiem technologii Firebase.",
-        );
-      },
-    );
-  }, []);
-
-  return { technologies, error };
+  const { data, error } = usePublicData<Technology[]>("technologies");
+  return { technologies: data?.length ? data : technologyDictionary, error };
 }
