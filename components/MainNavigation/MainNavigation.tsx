@@ -12,7 +12,8 @@ import FullCreativePathLogo from "@/public/FullCreativePathLogo.svg";
 const navLinks = [
   { href: "/", label: "Strona główna" },
   { href: "/about-me", label: "O mnie" },
-  { href: "/projects", label: "Projekty" },
+  { href: "/projects", label: "Web & aplikacje" },
+  { href: "/video", label: "Wideo" },
   { href: "/contact", label: "Kontakt" },
 ];
 
@@ -31,7 +32,7 @@ function PublicNavigation({ pathname }: { pathname: string }) {
           <Link href="/" aria-label="CreativePath — strona główna" className="shrink-0">
             <Image src={FullCreativePathLogo} alt="CreativePath" height={40} priority className="h-9 w-auto invert sm:h-10" />
           </Link>
-          <nav aria-label="Nawigacja główna" className="hidden items-center gap-7 lg:flex">
+          <nav aria-label="Nawigacja główna" className="hidden items-center gap-5 lg:flex">
             {navLinks.map((link) => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined}
               className={`text-sm transition-colors hover:text-white ${pathname === link.href ? "text-[#67dbe8]" : "text-[#aebbc3]"}`}>{link.label}</Link>)}
           </nav>
@@ -44,7 +45,7 @@ function PublicNavigation({ pathname }: { pathname: string }) {
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/70" />
-              <Dialog.Content className="fixed inset-x-4 top-4 z-[70] rounded-2xl border border-white/15 bg-[#0d1418] p-6 text-white" aria-describedby={undefined}>
+              <Dialog.Content className="fixed inset-x-4 top-4 z-[70] max-h-[calc(100svh-2rem)] overflow-y-auto rounded-2xl border border-white/15 bg-[#0d1418] p-6 text-white" aria-describedby={undefined}>
                 <div className="mb-8 flex items-center justify-between">
                   <Dialog.Title className="text-sm font-semibold">CreativePath</Dialog.Title>
                   <Dialog.Close asChild><Button variant="ghost" size="icon" aria-label="Zamknij menu" className="hover:bg-white/10 hover:text-white"><X /></Button></Dialog.Close>

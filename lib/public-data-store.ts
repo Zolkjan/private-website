@@ -6,7 +6,7 @@ type StoreSnapshot = { data: unknown; error: string };
 const emptySnapshot: StoreSnapshot = { data: null, error: "" };
 
 // Share one live subscription per resource and defer the SDK until after paint.
-function createStore(path: string, kind: "document" | "collection") {
+function createStore(path: string, kind: "document" | "collection", publishedOnly = false) {
   let snapshot = emptySnapshot;
   const listeners = new Set<() => void>();
   let stop: (() => void) | undefined;
@@ -19,7 +19,7 @@ function createStore(path: string, kind: "document" | "collection") {
     let unsubscribe: (() => void) | undefined;
     const connect = async () => {
       try {
-        const [{ db }, { collection, doc, onSnapshot }] = await Promise.all([
+        const [{ db }, { collection, doc, onSnapshot, query, where }] = await Promise.all([
           import("@/lib/firebase-public"), import("firebase/firestore"),
         ]);
         if (cancelled) return;
@@ -30,7 +30,7 @@ function createStore(path: string, kind: "document" | "collection") {
         const onError = () => publish({ ...snapshot, error: "Nie udało się pobrać danych. Spróbuj ponownie później." });
         unsubscribe = kind === "document"
           ? onSnapshot(doc(db, path), (value) => publish({ data: value.exists() ? value.data() : null, error: "" }), onError)
-          : onSnapshot(collection(db, path), (value) => publish({ data: value.docs.map((item) => ({ ...item.data(), id: item.id })), error: "" }), onError);
+          : onSnapshot(publishedOnly ? query(collection(db, path), where("published", "==", true)) : collection(db, path), (value) => publish({ data: value.docs.map((item) => ({ ...item.data(), id: item.id })), error: "" }), onError);
       } catch {
         if (!cancelled) publish({ ...snapshot, error: "Nie udało się połączyć z bazą danych." });
       }
@@ -65,6 +65,7 @@ const stores = {
   profile: createStore("siteContent/profile", "document"),
   projects: createStore("projects", "collection"),
   technologies: createStore("technologies", "collection"),
+  videos: createStore("videos", "collection", true),
 };
 
 export function usePublicData<T>(resource: keyof typeof stores) {

@@ -12,6 +12,35 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    match /videos/{videoId} {
+      function validVideo() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['title', 'description', 'category', 'format', 'services', 'videoUrl', 'posterUrl', 'posterPath', 'captionsUrl', 'client', 'year', 'duration', 'relatedProjectId', 'featured', 'published', 'order'])
+          && data.keys().hasOnly(['title', 'description', 'category', 'format', 'services', 'videoUrl', 'posterUrl', 'posterPath', 'captionsUrl', 'client', 'year', 'duration', 'relatedProjectId', 'featured', 'published', 'order'])
+          && data.title is string && data.title.size() > 0 && data.title.size() <= 120
+          && data.description is string && data.description.size() > 0 && data.description.size() <= 4000
+          && data.category in ['reels', 'ads', 'brand', 'web-video']
+          && data.format in ['portrait', 'landscape', 'square']
+          && data.services is list && data.services.size() > 0 && data.services.size() <= 4
+          && data.services.hasOnly(['concept', 'filming', 'editing', 'web'])
+          && data.videoUrl is string && data.videoUrl.size() <= 2048 && data.videoUrl.matches('https://.+')
+          && data.posterUrl is string && data.posterUrl.size() <= 4096
+          && (data.posterUrl == '' || data.posterUrl.matches('https://.+'))
+          && data.posterPath is string && data.posterPath.size() <= 1024
+          && data.captionsUrl is string && data.captionsUrl.size() <= 2048
+          && (data.captionsUrl == '' || data.captionsUrl.matches('https://.+'))
+          && data.client is string && data.client.size() <= 120
+          && data.year is string && data.year.matches('[0-9]{4}')
+          && data.duration is string && data.duration.size() <= 16
+          && data.relatedProjectId is string && data.relatedProjectId.size() <= 1500
+          && data.featured is bool && data.published is bool
+          && data.order is int && data.order >= 0 && data.order <= 10000;
+      }
+      allow read: if resource.data.published == true || isAdmin();
+      allow create, update: if isAdmin() && validVideo();
+      allow delete: if isAdmin();
+    }
+
     match /siteContent/{documentId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();

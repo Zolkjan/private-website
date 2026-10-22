@@ -52,7 +52,9 @@ export default function AdminContentPage() {
         </CardHeader>
         <CardContent className="px-6 py-6 sm:px-8">
           <form onSubmit={saveContent} className="grid gap-6 md:grid-cols-2">
-            <ContentTextarea label="Opis sekcji głównej" value={draft.heroDescription} onChange={(value) => setField("heroDescription", value)} />
+            <ContentTextarea label="Opis marki — strony i aplikacje, dodatkowo wideo" value={draft.brandDescription} onChange={(value) => setField("brandDescription", value)} />
+            <ContentTextarea label="Opis usług wideo" value={draft.videoDescription} onChange={(value) => setField("videoDescription", value)} />
+            <ContentTextarea label="Połączenie strony i wideo" value={draft.webVideoDescription} onChange={(value) => setField("webVideoDescription", value)} />
             <ContentTextarea label="Opis sekcji kontaktowej" value={draft.contactDescription} onChange={(value) => setField("contactDescription", value)} />
             <ContentTextarea label="O mnie — pierwszy akapit" value={draft.aboutFirstParagraph} onChange={(value) => setField("aboutFirstParagraph", value)} />
             <ContentTextarea label="O mnie — drugi akapit" value={draft.aboutSecondParagraph} onChange={(value) => setField("aboutSecondParagraph", value)} />

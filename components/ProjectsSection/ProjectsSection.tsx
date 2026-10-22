@@ -10,6 +10,7 @@ import { useProjects } from "@/lib/firestore-hooks";
 import { getTechnology, useTechnologies, type Technology } from "@/lib/technologies";
 import { Card } from "@/components/ui/card";
 import { getProjectCategory, type ProjectCategoryId } from "@/lib/project-categories";
+import { cn } from "@/lib/utils";
 export interface Project {
   id: string | number;
   title: string;
@@ -115,20 +116,26 @@ const ProjectsSection = () => {
   const { technologies } = useTechnologies();
   const featured = projects.filter((project) => project.featured);
   const featuredProjects = (featured.length ? featured : projects).slice(0, 3);
-  useSectionReveal(containerRef);
+  useSectionReveal(containerRef, featuredProjects.map((project) => project.id).join(","));
 
   return (
-    <section ref={containerRef} id="projekty" className="section-padding">
+    <section ref={containerRef} id="projekty" aria-labelledby="projects-heading" className="section-padding border-t border-white/10">
       <div className="site-container">
         <div data-reveal className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div><p className="section-eyebrow">Wybrane projekty</p><h2 className="section-heading">Pomysły zamienione w działanie.</h2></div>
+          <div>
+            <p className="section-eyebrow"><span className="mr-3 text-[#70818c]">02 /</span> Wybrane strony i aplikacje</p>
+            <h2 id="projects-heading" className="section-heading">Od pierwszego pomysłu<br /><span className="text-[#8d9da6]">do działającego projektu.</span></h2>
+          </div>
           <Button asChild variant="link" className="h-auto shrink-0 justify-start p-0 text-[#67dbe8]">
             <Link href="/projects">Wszystkie projekty <ArrowRight /></Link>
           </Button>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {featuredProjects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} technologies={technologies} />
+            <div key={project.id} data-reveal data-reveal-delay={index === 2 ? 0.08 : 0} className={cn("min-w-0 [&>div]:h-full", index === 0 && "md:col-span-2")}>
+              <ProjectCard project={project} index={index} technologies={technologies} spotlight={index === 0}
+                imageSizes={index === 0 ? "(max-width: 767px) 100vw, (max-width: 1279px) 55vw, 650px" : "(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 590px"} />
+            </div>
           ))}
         </div>
         {featuredProjects.length === 0 && <p className="readable-copy">Nowe realizacje pojawią się tutaj wkrótce.</p>}
@@ -137,14 +144,14 @@ const ProjectsSection = () => {
   );
 };
 
-const ProjectCard = ({ project, index, technologies }: { project: Project; index: number; technologies: Technology[] }) => {
+const ProjectCard = ({ project, index, technologies, spotlight = false, imageSizes = "(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 390px" }: { project: Project; index: number; technologies: Technology[]; spotlight?: boolean; imageSizes?: string }) => {
   const image = project.images?.[0]?.url || project.imageUrl;
   return (
-    <Card className="project-card group gap-0 overflow-hidden rounded-2xl border-white/10 bg-[#10171b] py-0 shadow-none transition-colors hover:border-white/25">
-      <Link href={`/projects/${project.id}`} tabIndex={-1} aria-hidden="true" className="relative block aspect-[4/3] overflow-hidden border-b border-white/10 bg-[#16232c]">
+    <Card className={cn("project-card group gap-0 overflow-hidden rounded-2xl border-white/10 bg-[#10171b] py-0 shadow-none transition-colors hover:border-white/25", spotlight && "md:grid md:grid-cols-[1.2fr_1fr]")}>
+      <Link href={`/projects/${project.id}`} tabIndex={-1} aria-hidden="true" className={cn("relative block aspect-[4/3] overflow-hidden border-b border-white/10 bg-[#16232c]", spotlight && "md:aspect-auto md:min-h-[360px] md:border-b-0 md:border-r")}>
         {image ? (
           <PortfolioImage src={image} alt={`Podgląd projektu ${project.title}`} fill
-            sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 390px"
+            sizes={imageSizes}
             className="object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.025]" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${project.accent}20, #0b1218)` }}>
@@ -156,15 +163,15 @@ const ProjectCard = ({ project, index, technologies }: { project: Project; index
         )}
         <span className="absolute right-4 top-4 rounded-full bg-black/55 px-3 py-1.5 text-xs text-white">{project.year}</span>
       </Link>
-      <div className="flex flex-1 flex-col p-6">
+      <div className={cn("flex flex-1 flex-col p-6", spotlight && "md:justify-center md:p-8 lg:p-10")}>
         <div className="mb-3 flex items-baseline justify-between gap-4">
-          <h3 className="text-xl font-semibold tracking-tight">
+          <h3 className={cn("text-xl font-semibold tracking-tight", spotlight && "md:text-3xl")}>
             <Link href={`/projects/${project.id}`} className="transition-colors hover:text-[#67dbe8]">{project.title}</Link>
           </h3>
           <span className="text-xs tabular-nums text-[#70818c]">{String(index + 1).padStart(2, "0")}</span>
         </div>
         <p className="mb-2 text-xs text-[#67dbe8]">{getProjectCategory(project).projectLabel}</p>
-        <p className="mb-5 line-clamp-2 text-sm leading-6 text-[#aebbc3]">{project.description.replaceAll("&nbsp;", " ")}</p>
+        <p className={cn("mb-5 line-clamp-2 text-sm leading-6 text-[#aebbc3]", spotlight && "md:line-clamp-3")}>{project.description.replaceAll("&nbsp;", " ")}</p>
         <div className="mb-6 flex flex-wrap items-center gap-2" aria-label="Technologie projektu">
           {project.tags.length > 0 && <span className="w-full text-[11px] text-[#82939e]">Technologie</span>}
           {project.tags.slice(0, 3).map((tag) => <TechnologyBadge key={tag} name={tag} technologies={technologies} />)}

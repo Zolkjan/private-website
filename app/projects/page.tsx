@@ -80,13 +80,14 @@ export default function ProjectsPage() {
         </Link>
 
         <header className="projects-heading mb-10 max-w-3xl sm:mb-14">
-          <p className="section-eyebrow">Portfolio</p>
+          <p className="section-eyebrow">Portfolio / Strony i aplikacje</p>
           <h1 className="mb-5 text-[clamp(2.5rem,6vw,5rem)] font-semibold leading-[1.08] tracking-tight">
             Moje <span className="text-gradient">projekty.</span>
           </h1>
           <p className="readable-copy max-w-xl">
             Wybierz rodzaj realizacji i znajdź projekty podobne do tego, czego potrzebujesz.
           </p>
+          <Button asChild variant="link" className="mt-4 h-auto p-0 text-[#f3b6a0]"><Link href="/video">Zobacz też portfolio wideo <ArrowRight /></Link></Button>
         </header>
 
         <section aria-labelledby="project-filters-heading" className="border-b border-white/10 pb-7">

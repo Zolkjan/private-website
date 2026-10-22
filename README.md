@@ -12,7 +12,20 @@ Firestore and Storage allow public reads for portfolio content and restrict writ
 
 The admin panel manages projects, technology names/categories/colors, personal profile and contact details, and the hero, about, and contact copy. Uploaded project images are stored in Firebase Storage.
 
-## Getting Started
+## Portfolio wideo
+
+- `/video` — portfolio z filtrami rodzaju realizacji (rolki, reklamy, filmy wizerunkowe, strona + wideo), formatu (9:16, 16:9, 1:1) i zakresu prac (scenariusz, nagranie, montaż, web).
+- `/admin/videos` — dodawanie, edycja, usuwanie, kolejność, szkice i publikacja realizacji. Zaznaczenie „Wyróżnij” pokazuje maksymalnie trzy opublikowane filmy na stronie głównej. Projekt strony lub aplikacji można powiązać z filmem.
+- Obsługiwane są linki HTTPS do YouTube (w tym Shorts), Vimeo i plików MP4/WebM. Odtwarzacz powstaje dopiero po kliknięciu i jest usuwany po zamknięciu. Nie ma automatycznego odtwarzania na liście ani pobierania filmów podczas wczytywania strony.
+- Filmy muszą być dostępne dla odwiedzających bez logowania i zezwalać na osadzanie. Dla materiałów z Instagrama/TikToka użyj pliku MP4 lub linku YouTube/Vimeo. Napisy do MP4/WebM mogą pochodzić z opcjonalnego pliku WebVTT; przy napisach z innej domeny serwery filmu i napisów muszą zezwalać na CORS.
+- Okładki JPG/PNG/WebP do 10 MB są zapisywane w Storage pod `videos/{id}/`. Sam film pozostaje w wybranym hostingu. Okładki są publicznymi plikami, także w szkicach; szkice dokumentów Firestore może czytać tylko administrator.
+- Nowe teksty marki, sekcji wideo i oferty web + wideo edytujesz w `/admin/content`. Pole `brandDescription` zastępuje wcześniejszy opis hero, zachowany w danych jako `heroDescription`; pozostałe zapisane treści są zachowane.
+
+**Przed użyciem modułu na wdrożonej stronie opublikuj aktualne `firestore.rules` i `storage.rules` w konsoli Firebase.** Kolekcja `videos` jest nowa: odczyt publiczny używa zapytania `published == true`, a administrator może odczytać szkice i zapisywać realizacje. Nie wymaga dodatkowego indeksu złożonego. Moduł nie dodaje przykładowych realizacji do bazy.
+
+Alternatywnie, plik `firebase.json` pozwala wdrożyć same reguły przez Firebase CLI. Po zalogowaniu kontem z dostępem do projektu uruchom `firebase deploy --only "firestore:rules,storage" --project private-webiste`. Przy wygasłej sesji najpierw wykonaj `firebase login --reauth`. Zmiany kodu strony wdraża się osobno w używanym hostingu.
+
+## Uruchomienie lokalne
 
 First, run the development server:
 

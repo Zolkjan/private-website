@@ -132,8 +132,8 @@ export default function ContactPage() {
         {/* Left info */}
         <div>
           <p className="text-[#9bb6c1] leading-relaxed mb-10 max-w-xs">
-            Masz pomysł na projekt? Potrzebujesz freelancera? Chcesz porozmawiać
-            o&nbsp;współpracy? Napisz do mnie, odpiszę jak najszybciej.
+            Planujesz stronę, aplikację, nagranie rolek lub reklamę? Możemy połączyć
+            web i wideo w jednej realizacji. Opisz swój pomysł.
           </p>
 
           <div className="space-y-5 mb-12">
@@ -248,7 +248,7 @@ export default function ContactPage() {
                   required
                   value={formState.subject}
                   onChange={handleChange}
-                  placeholder="Projekt strony / Współpraca / Inne"
+                  placeholder="Strona / Aplikacja / Wideo / Web + wideo"
                   className="h-12 rounded-xl border-white/10 bg-white/[0.03] px-4 text-sm placeholder:text-[#789099] focus-visible:border-[#05dbf2]/50 focus-visible:ring-[#05dbf2]/20"
                 />
               </div>

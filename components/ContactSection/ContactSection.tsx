@@ -20,15 +20,18 @@ export default function ContactSection() {
   ].filter((social) => social.href);
 
   return (
-    <section ref={sectionRef} id="kontakt" className="border-t border-white/10 bg-[#0e1417]">
+    <section ref={sectionRef} id="kontakt" aria-labelledby="contact-heading" className="border-t border-white/10 bg-[#0e1417]">
       <div className="site-container py-16 md:py-24">
-        <div data-reveal className="grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-end md:gap-16">
-          <div><p className="section-eyebrow">Zróbmy coś dobrego</p><h2 className="section-heading">Twój pomysł.<br /><span className="text-[#67dbe8]">Nasz kolejny projekt.</span></h2></div>
-          <div>
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-end lg:gap-16">
+          <div data-reveal>
+            <p className="section-eyebrow"><span className="mr-3 text-[#70818c]">06 /</span> Zróbmy kolejny krok</p>
+            <h2 id="contact-heading" className="text-[clamp(2.5rem,5.5vw,4.75rem)] font-semibold leading-[1.08] tracking-[-0.05em]">Masz pomysł?<br /><span className="text-[#67dbe8]">Nadajmy mu formę.</span></h2>
+          </div>
+          <div data-reveal data-reveal-delay="0.1">
             <p className="readable-copy mb-6 max-w-md">{content.contactDescription}</p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" className="h-12 rounded-full bg-[#67dbe8] px-6 text-[#071014] hover:bg-[#a0edf4]">
-                <Link href="/contact">Porozmawiajmy <ArrowUpRight /></Link>
+                <Link href="/contact">Przejdź do kontaktu <ArrowUpRight /></Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 max-w-full rounded-full border-white/20 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white">
                 <a href={`mailto:${profile.email}`}><Mail /><span className="truncate">{profile.email}</span></a>

@@ -11,7 +11,7 @@ import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, FileText, FolderKanban, Layers3, LogOut, Plus, UserRound } from "lucide-react";
+import { ArrowLeft, FileText, Film, FolderKanban, Layers3, LogOut, Plus, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { auth, adminUid, db } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
@@ -80,7 +80,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     if (user?.uid === adminUid) {
       if (isLoginRoute) router.replace("/admin/projects");
     } else if (!isLoginRoute) {
-      router.replace("/admin");
+      window.location.replace("/admin");
     }
   }, [isLoginRoute, loading, router, user]);
 
@@ -148,6 +148,9 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             <AdminNavLink href="/admin/projects/new" active={pathname === "/admin/projects/new"}>
               <Plus /> Dodaj projekt
             </AdminNavLink>
+            <AdminNavLink href="/admin/videos" active={pathname.startsWith("/admin/videos")}>
+              <Film /> Wideo
+            </AdminNavLink>
             <AdminNavLink href="/admin/content" active={pathname === "/admin/content"}>
               <FileText /> Treści strony
             </AdminNavLink>
@@ -170,14 +173,15 @@ export default function AdminShell({ children }: { children: ReactNode }) {
 
         <div className="lg:pl-64">
           <header className="sticky top-0 z-20 border-b border-[#1c2a2e] bg-[#080c0e]/95 px-5 py-4 backdrop-blur sm:px-8 lg:px-10">
-            <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
+            <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
               <Link href="/admin/projects" className="lg:hidden">
                 <span className="block text-[10px] uppercase tracking-[0.22em] text-[#04b2d9]">CreativePath</span>
                 <span className="text-sm font-semibold">Panel admina</span>
               </Link>
-              <nav className="flex items-center gap-1 lg:hidden" aria-label="Panel administracyjny">
+              <nav className="order-last flex w-full items-center gap-1 overflow-x-auto lg:hidden" aria-label="Panel administracyjny">
                 <MobileAdminLink href="/admin/projects" active={pathname === "/admin/projects"}>Projekty</MobileAdminLink>
                 <MobileAdminLink href="/admin/projects/new" active={pathname === "/admin/projects/new"}>Dodaj</MobileAdminLink>
+                <MobileAdminLink href="/admin/videos" active={pathname.startsWith("/admin/videos")}>Wideo</MobileAdminLink>
                 <MobileAdminLink href="/admin/content" active={pathname === "/admin/content"}>Treści</MobileAdminLink>
                 <MobileAdminLink href="/admin/profile" active={pathname === "/admin/profile"}>Profil</MobileAdminLink>
                 <MobileAdminLink href="/admin/technologies" active={pathname === "/admin/technologies"}>Technologie</MobileAdminLink>
@@ -234,7 +238,7 @@ function MobileAdminLink({
     <Link
       href={href}
       className={cn(
-        "rounded px-2 py-2 text-xs",
+        "shrink-0 rounded px-2 py-2 text-xs",
         active ? "text-[#05dbf2]" : "text-[#9bb6c1]",
       )}
     >

@@ -11,9 +11,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Jan Żółkiewski — strony internetowe i aplikacje | CreativePath",
+  title: "CreativePath — tworzenie stron internetowych i aplikacji",
   description:
-    "Projektuję i tworzę nowoczesne strony internetowe oraz aplikacje webowe. Interaktywne doświadczenia, animacje GSAP i rozwiązania w Next.js.",
+    "Projektuję i programuję strony internetowe oraz aplikacje webowe. CreativePath — autorskie projekty, responsywność i animacje. Dodatkowo nagrywam i montuję wideo.",
 };
 
 export default function RootLayout({
